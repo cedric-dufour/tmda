@@ -1506,6 +1506,11 @@ congroup.add_option("--ssl-key",
                     help= \
 """Location of the SSL/TLS private key file.""")
 
+congroup.add_option("--ssl-dh",
+                    metavar="/PATH/TO/FILE", default=None, dest="ssl_dh",
+                    help= \
+"""Location of the SSL/TLS Diffie-Hellman parameters file.""")
+
 # Rationale for the default cipher list: Initially, we want to eliminate SSL2
 # because it is insecure. 'DEFAULT:!SSLv2' would do this, but also includes weak
 # 56- and 40-bit ciphers. That may be fine, but we can be more secure by default
@@ -1657,6 +1662,9 @@ def handle_opts():
         ssl_context.set_cipher_list(opts.ciphers)
         ssl_context.use_certificate_chain_file(os.path.expanduser(opts.ssl_cert))
         ssl_context.use_privatekey_file(os.path.expanduser(opts.ssl_key))
+        if (opts.ssl_dh):
+            ssl_context.load_tmp_dh(os.path.expanduser(opts.ssl_dh))
+
 
 # provide disclaimer if running as root
 if running_as_root:
