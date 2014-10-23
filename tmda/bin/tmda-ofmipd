@@ -1472,6 +1472,16 @@ protocol as soon as a connection is made. This mode is not support
 for the STARTTLS command. This configuration is typically run on
 port 465 (smtps).""")
 
+congroup.add_option("--ssl-no-v2",
+                    action="store_true", default=False, dest="ssl_no_v2",
+                    help= \
+"""Disable SSLv2 protocol altogether.""")
+
+congroup.add_option("--ssl-no-v3",
+                    action="store_true", default=False, dest="ssl_no_v3",
+                    help= \
+"""Disable SSLv3 protocol altogether.""")
+
 congroup.add_option("--tls",
                     type="choice", default=None, dest="tls",
                     choices=['optional', 'localoptional', 'on'],
@@ -1659,6 +1669,10 @@ def handle_opts():
                 '--ssl-cert and --ssl-key are required when using --ssl or --tls'
 
         ssl_context = SSL.Context(SSL.SSLv23_METHOD)
+        if opts.ssl_no_v2:
+            ssl_context.set_options(SSL.OP_NO_SSLv2)
+        if opts.ssl_no_v3:
+            ssl_context.set_options(SSL.OP_NO_SSLv3)
         ssl_context.set_cipher_list(opts.ciphers)
         ssl_context.use_certificate_chain_file(os.path.expanduser(opts.ssl_cert))
         ssl_context.use_privatekey_file(os.path.expanduser(opts.ssl_key))
