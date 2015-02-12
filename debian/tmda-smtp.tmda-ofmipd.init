@@ -86,19 +86,6 @@ fi
 #    exit 1
 #fi
 
-# Check that the user exists (if we set a user)
-# Does the user exist?
-if [ -n "$DAEMONUSER" ] ; then
-    if getent passwd | grep -q "^$DAEMONUSER:"; then
-        # Obtain the uid and gid
-        DAEMONUID=`getent passwd |grep "^$DAEMONUSER:" | awk -F : '{print $3}'`
-        DAEMONGID=`getent passwd |grep "^$DAEMONUSER:" | awk -F : '{print $4}'`
-    else
-        log_failure_msg "The user $DAEMONUSER, required to run $NAME does not exist."
-        exit 1
-    fi
-fi
-
 
 set -e
 
@@ -184,6 +171,19 @@ case "$1" in
             log_progress_msg "apparently already running"
             log_end_msg 0
             exit 0
+        fi
+        # Check that the user exists (if we set a user)
+        # Does the user exist?
+        if [ -n "$DAEMONUSER" ] ; then
+            if getent passwd | grep -q "^$DAEMONUSER:"; then
+                # Obtain the uid and gid
+                DAEMONUID=`getent passwd |grep "^$DAEMONUSER:" | awk -F : '{print $3}'`
+                DAEMONGID=`getent passwd |grep "^$DAEMONUSER:" | awk -F : '{print $4}'`
+            else
+                log_progress_msg "user $DAEMONUSER does not exist"
+                log_end_msg 1
+                exit 1
+            fi
         fi
         if start_server ; then
             # NOTE: Some servers might die some time after they start,
