@@ -527,7 +527,7 @@ class Auth(Util.Debugable):
         dictionary containing username:password pairs.  Username is
         returned in lowercase."""
         authdict = {}
-        fp = file(authfile, 'r')
+        fp = open(authfile, 'r')
         for line in fp:
             line = line.strip()
             if line == '':
@@ -543,7 +543,7 @@ class Auth(Util.Debugable):
         containing IP1 -> IP2:port hashes."""
         ipauthmap = {}
         try:
-            fp = file(ipfile, 'r')
+            fp = open(ipfile, 'r')
             for line in fp:
                 line = line.strip()
                 if line == "":

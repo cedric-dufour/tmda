@@ -398,7 +398,7 @@ def main():
     if Defaults.MAIL_FOLLOWUP_TO and 'mail-followup-to' not in msgout:
         if isinstance(Defaults.MAIL_FOLLOWUP_TO, str):
             if os.path.isfile(Defaults.MAIL_FOLLOWUP_TO):
-                mft_addrs = file(Defaults.MAIL_FOLLOWUP_TO, 'r').readlines()
+                mft_addrs = open(Defaults.MAIL_FOLLOWUP_TO, 'r').readlines()
             else:
                 mft_addrs = None
         else:

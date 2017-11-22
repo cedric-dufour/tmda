@@ -197,7 +197,7 @@ class FileAuthenticator(Authenticator):
         dictionary containing username:password pairs.  Username is
         returned in lowercase."""
         authdict = {}
-        fp = file(self._filename, 'r')
+        fp = open(self._filename, 'r')
         for line in fp:
             line = line.strip()
             if line == '' or line.startswith('#'):
@@ -326,7 +326,7 @@ class RemoteAuthenticator(Authenticator):
         space_matcher = re.compile(r'\s+')
         ipauthmap = {}
         try:
-            fp = file(filename, 'r')
+            fp = open(filename, 'r')
             line_num = 0
             for line in fp:
                 line_num += 1
