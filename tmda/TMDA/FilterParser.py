@@ -1003,7 +1003,7 @@ class FilterParser:
                     mmdb_file.close()
                     mmdb_addylist = mmdb_data[mmdb_key]
                     # Make sure mmdb_addylist is a list of e-mail addresses.
-                    if type(mmdb_addylist) is dict:
+                    if isinstance(mmdb_addylist, dict):
                          mmdb_addylist = list(mmdb_data[mmdb_key].keys())
                     for addy in keys:
                         if addy and addy.lower() in mmdb_addylist:

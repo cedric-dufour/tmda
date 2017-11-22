@@ -633,10 +633,10 @@ def verify_dated_cookie(dated_cookie):
         else:
             logmsg = "ACTION_EXPIRED_DATED (%s)" % \
                 Util.make_date(int(cookie_date))
-            if type(Defaults.ACTION_EXPIRED_DATED) is str:
+            if isinstance(Defaults.ACTION_EXPIRED_DATED, str):
                 do_default_action(Defaults.ACTION_EXPIRED_DATED.lower(),
                                   logmsg, 'bounce_expired_dated.txt')
-            elif type(Defaults.ACTION_EXPIRED_DATED) is not dict:
+            elif not isinstance(Defaults.ACTION_EXPIRED_DATED, dict):
                 errmsg = 'ACTION_EXPIRED_DATED is wrong type (%s). ' % \
                     type(Defaults.ACTION_EXPIRED_DATED)
                 raise TypeError(errmsg + \
