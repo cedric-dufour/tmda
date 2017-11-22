@@ -787,7 +787,7 @@ def pickleit(object, file, proto=2):
     """
     tempfile.tempdir = os.path.dirname(file)
     tmpname = tempfile.mkstemp()[1]
-    fp = open(tmpname, 'w')
+    fp = open(tmpname, 'wb')
     pickle.dump(object, fp, proto)
     fp.close()
     os.rename(tmpname, file)
@@ -796,7 +796,7 @@ def pickleit(object, file, proto=2):
 
 def unpickle(file):
     """Retrieve and return object from file."""
-    fp = open(file, 'r')
+    fp = open(file, 'rb')
     object = pickle.load(fp)
     fp.close()
     return object
