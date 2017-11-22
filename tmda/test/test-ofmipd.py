@@ -168,7 +168,7 @@ class AuthenticationTests(FileAuthServerClientMixin, unittest.TestCase):
         self.assertEqual(len(lines), 1)
 
         ticket = self.b64_decode(lines[0])
-        digest = hmac.new(password, ticket, md5).hexdigest()
+        digest = hmac.new(password.encode(), ticket.encode(), md5).hexdigest()
         message = '%s %s' % (username, digest)
         message = self.b64_encode(message)
 

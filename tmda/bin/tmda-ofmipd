@@ -101,11 +101,12 @@ class Authenticator(object):
 
     def _cram_md5_check(self, username, ticket, response):
         import hmac
+        from hashlib import md5
 
         pw = self._get_password(username)
         if pw is None:
             return False
-        digest = hmac.new(pw, ticket).hexdigest()
+        digest = hmac.new(pw.encode(), ticket.encode(), md5).hexdigest()
         return digest == response
 
     # Override _has_passwords and _get_password in Authenticators that have

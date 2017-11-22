@@ -308,7 +308,7 @@ class Auth(Util.Debugable):
         password = self.__authdict.get(username.lower(), 0)
         if password == 0:
             return 0
-        newhexdigest = hmac.HMAC(password, ticket, digestmod).hexdigest()
+        newhexdigest = hmac.new(password.encode(), ticket.encode(), digestmod).hexdigest()
         return newhexdigest == hexdigest
 
     def supports_cram_md5(self):
