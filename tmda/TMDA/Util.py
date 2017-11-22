@@ -810,7 +810,7 @@ def unpickle(file):
 
 def db_insert(db, insert_sql, params):
     """Insert (using the 'insert_sql' SQL) an address into a SQL DB."""
-    dbmodule = sys.modules[db.__module__]
+    dbmodule = sys.modules[db.__class__.__module__]
     DatabaseError = getattr(dbmodule, 'DatabaseError')
     cursor = db.cursor()
     try:
