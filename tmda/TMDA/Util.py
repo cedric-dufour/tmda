@@ -632,12 +632,17 @@ def decode_header(str_v):
     an awkward interface IMO, especially when the header contains a
     mix of encoded and non-encoded parts.
     """
+    if str_v is None:
+        return None
     try:
         from email import header
         parts = []
         pairs = header.decode_header(str_v)
         for pair in pairs:
-            parts.append(pair[0])
+            if isinstance(pair[0], bytes):
+                parts.append(pair[0].decode(pair[1], errors='replace') if pair[1] is not None else pair[0].decode(errors='replace'))
+            else:
+                parts.append(pair[0])
         decoded_string = ' '.join(parts)
         return decoded_string
     except email.errors.HeaderParseError:
