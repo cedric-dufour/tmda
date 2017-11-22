@@ -179,7 +179,7 @@ class Auth(Util.Debugable):
             raise ValueError("File '%s' does not exist" % file)
         self.__authtype = "file"
         self.__authfile = file
-        self.__authfile_allows_cleartext = Util.getfilemode(file) in (400, 600)
+        self.__authfile_allows_cleartext = Util.getfilemode(file) in (0o400, 0o600)
         self.__authdict = None
         self.__authdictupdate = None
         self.__update_authdict()

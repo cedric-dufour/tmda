@@ -181,7 +181,7 @@ class FileAuthenticator(Authenticator):
         Authenticator.__init__(self)
 
         mode = Util.getfilemode(filename)
-        if mode not in (400, 600):
+        if mode not in (0o400, 0o600):
             raise IOError('authfile "%s" must be chmod 400 or 600!', filename)
 
         self._filename = filename

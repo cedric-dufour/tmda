@@ -163,8 +163,7 @@ def getfilemode(path):
     """Return the octal number of the bit pattern for the file
     permissions on path."""
     statinfo = os.stat(path)
-    permbits = stat.S_IMODE(statinfo[stat.ST_MODE])
-    mode = int(oct(permbits))
+    mode = stat.S_IMODE(statinfo[stat.ST_MODE])
     return mode
 
 

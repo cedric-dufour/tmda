@@ -1733,8 +1733,8 @@ for var in _path_vars:
 if os.path.exists(CRYPT_KEY_FILE):
     if os.name == 'posix':
         crypt_key_filemode = Util.getfilemode(CRYPT_KEY_FILE)
-        if crypt_key_filemode not in (400, 600):
-            if ALLOW_MODE_640 and crypt_key_filemode == 640:
+        if crypt_key_filemode not in (0o400, 0o600):
+            if ALLOW_MODE_640 and crypt_key_filemode == 0o640:
                 pass
             else:
                 raise Errors.ConfigError(CRYPT_KEY_FILE + " must be chmod 400 or 600!")
