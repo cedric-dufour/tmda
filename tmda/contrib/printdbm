@@ -31,7 +31,10 @@ import sys
 
 dbmfile = sys.argv[1]
 
-dbm = dbm.open(dbmfile,'r')
-for key in list(dbm.keys()):
-    print('%s %s' % (key, dbm[key]))
-dbm.close()
+dbm_o = dbm.open(dbmfile,'r')
+for key in dbm_o.keys():
+    try:
+        print('%s = %s' % (key.decode(), dbm_o[key].decode()))
+    except KeyError:
+        print('%s = (no-value)' % key.decode())
+dbm_o.close()

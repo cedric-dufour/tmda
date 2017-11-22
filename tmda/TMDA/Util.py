@@ -749,10 +749,10 @@ def build_dbm(filename):
     import glob
     try:
         dbmpath, dbmname = os.path.split(filename)
-        dbmname += '.db'
+        dbmname += '.dbm'
         tempfile.tempdir = dbmpath
         tmpname = tempfile.mktemp()
-        dbm = dbm.open(tmpname, 'n')
+        dbm_o = dbm.open(tmpname, 'n')
         for line in file_to_list(filename):
             linef = line.split()
             key = linef[0].lower()
@@ -760,8 +760,8 @@ def build_dbm(filename):
                 value = linef[1]
             except IndexError:
                 value = ''
-            dbm[key] = value
-        dbm.close()
+            dbm_o[key.encode()] = value.encode()
+        dbm_o.close()
         for f in glob.glob(tmpname + '*'):
             (tmppath, tmpname) = os.path.split(tmpname)
             newf = f.replace(tmpname, dbmname)

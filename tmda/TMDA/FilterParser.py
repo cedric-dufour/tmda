@@ -745,19 +745,26 @@ class FilterParser:
         Search a DBM-style database.
         """
         import dbm
-        dbm = dbm.open(pathname, 'r')
+        dbm_o = dbm.open(pathname, 'r')
+        dbm_keys = dbm_o.keys()
         found_match = 0
         for key in keys:
-            if key and key.lower() in dbm:
+            if not key:
+                continue
+            key = key.lower().encode()
+            if key in dbm_keys:
                 found_match = 1
-                dbm_value = dbm[key.lower()]
+                try:
+                    dbm_value = dbm_o[key].decode()
+                except KeyError:
+                    dbm_value = None
                 # If there is an entry for this key,
                 # we consider it an overriding action
                 # specification.
                 if dbm_value:
                     actions.clear()
                     actions.update(self.__buildactions(dbm_value, source))
-                dbm.close()
+                dbm_o.close()
                 break
         return found_match
 
@@ -911,7 +918,7 @@ class FilterParser:
                         Util.build_cdb, self.__search_cdb, optional)
                 elif 'autodbm' in args:
                     (dbname, search_func) = self.__autobuild_db(
-                        dbname, '.db', dbname + '.last_built',
+                        dbname, '.dbm', dbname + '.dbm.last_built',
                         Util.build_dbm, self.__search_dbm, optional)
                 else:
                     if not os.path.exists(dbname) and optional:
