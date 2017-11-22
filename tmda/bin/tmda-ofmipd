@@ -219,43 +219,19 @@ class PamAuthenticator(Authenticator):
     # failure delay (e.g., uses pam_unix with the nodelay option).
     def __init__(self, service='login'):
         try:
-            import PAM
+            import pam
         except ImportError:
             raise ImportError('Python PAM '
-                '(http://www.pangalactic.org/PyPAM/) required.')
+                '(https://pypi.python.org/pypi/python-pam) required.')
 
         Authenticator.__init__(self)
         self._service = service
 
     def _plain_check(self, username, password, localip):
-        import PAM
+        import pam
 
-        auth = PAM.pam()
-        conv = lambda auth, msg, appdata: \
-                      self._conv(msg, password)
-        auth.start(self._service, username, conv)
-        try:
-            auth.authenticate()
-            auth.acct_mgmt()
-        except PAM.error:
-            logger.info('PAM error:', exc_info=True)
-            return False
-
-        return True
-
-    def _conv(self, msgs, password):
-        import PAM
-
-        result = []
-        for (msg, style) in msgs:
-            if style == PAM.PAM_PROMPT_ECHO_OFF:
-                logger.debug('PAM password prompt (hopefully): %r', msg)
-                result.append((password, 0))
-            else:
-                logger.warning('Unhandled PAM message, style = %d, msg = %s',
-                               style, msg)
-                result.append(('', 0))
-        return result
+        auth = pam.pam()
+        return auth.authenticate(username, password, service=self._service)
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self._service)
