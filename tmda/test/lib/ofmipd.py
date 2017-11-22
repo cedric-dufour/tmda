@@ -3,6 +3,7 @@ import os
 import socket
 import subprocess
 import re
+import base64
 
 import OpenSSL.SSL as SSL
 
@@ -206,7 +207,7 @@ class TestOfmipdClient(object):
             self.connect(True)
 
         userpass = '%s\x00%s\x00%s' % (username, username, password)
-        userpass = userpass.encode('base64')[:-1]
+        userpass = base64.encodebytes(userpass.encode()).decode()[:-1]
         (code, lines) = self.exchange('AUTH PLAIN %s\r\n' % userpass)
         assert code == 235, 'AUTH failed, code=%d' % code
 

@@ -1,4 +1,5 @@
 import unittest
+import base64
 import hmac
 import sys
 from hashlib import md5
@@ -123,20 +124,28 @@ class OptionalStartTlsServerResponses(ServerResponseTestMixin,
 # server. test-ofmipd-auth.py tests tmda-ofmipd's backend authentication
 # methods, such as authenticating against a password file or a different server.
 class AuthenticationTests(FileAuthServerClientMixin, unittest.TestCase):
+    @staticmethod
+    def b64_encode(s):
+        return base64.encodebytes(s.encode()).decode()[:-1]
+
+    @staticmethod
+    def b64_decode(s):
+        return base64.decodebytes(s.encode()).decode()
+
     def authPlain(self, username, password, expectedCode):
         authString = '\x00'.join([username, username, password])
-        authString = authString.encode('base64')[:-1]
+        authString = self.b64_encode(authString)
         (code, lines) = self.client.exchange('AUTH PLAIN %s\r\n' % authString)
 
         self.assertEqual(code, expectedCode,
             'username: %r password: %r code: %d' % (username, password, code))
 
     def authLogin(self, username, password, firstCode, secondCode):
-        userString = username.encode('base64')[:-1]
-        passString = password.encode('base64')[:-1]
+        userString = self.b64_encode(username)
+        passString = self.b64_encode(password)
 
-        userPrompt = 'Username:'.encode('base64')[:-1]
-        passPrompt = 'Password:'.encode('base64')[:-1]
+        userPrompt = self.b64_encode('Username:')
+        passPrompt = self.b64_encode('Password:')
 
         (code, lines) = self.client.exchange('AUTH LOGIN\r\n')
         self.assertEqual(code, 334)
@@ -158,10 +167,10 @@ class AuthenticationTests(FileAuthServerClientMixin, unittest.TestCase):
         self.assertEqual(code, 334)
         self.assertEqual(len(lines), 1)
 
-        ticket = lines[0].decode('base64')
+        ticket = self.b64_decode(lines[0])
         digest = hmac.new(password, ticket, md5).hexdigest()
         message = '%s %s' % (username, digest)
-        message = message.encode('base64')[:-1]
+        message = self.b64_encode(message)
 
         (code, lines) = self.client.exchange('%s\r\n' % message)
         self.assertEqual(code, expectedCode,

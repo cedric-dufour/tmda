@@ -565,8 +565,8 @@ class Auth(Util.Debugable):
 
     def __b64_encode(self, s):
         """base64 encoding without the trailing newline."""
-        return base64.encodestring(s)[:-1]
+        return base64.encodebytes(s.encode()).decode()[:-1]
 
     def __b64_decode(self, s):
         """base64 decoding."""
-        return base64.decodestring(s)
+        return base64.decodebytes(s.encode()).decode()

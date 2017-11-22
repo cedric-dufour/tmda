@@ -144,10 +144,12 @@ def make_keyword_address(address, keyword):
 
 
 def make_fingerprint(hdrlist):
-    """Expects a list of strings, and returns a full (unsliced) HMAC
-    as a base64 encoded string, but with the trailing '=' and newline
-    removed."""
+    """Expects a list of strings or bytes strings, and returns a full
+    (unsliced) HMAC as a base64 encoded string, but with the trailing
+    '=' and newline removed."""
     fp = hmac.new(Defaults.CRYPT_KEY, digestmod=sha1)
     for hdr in hdrlist:
+        if isinstance(hdr, str):
+            hdr = hdr.encode()
         fp.update(hdr)
-    return base64.encodestring(fp.digest())[:-2] # Remove '=\n'
+    return base64.encodebytes(fp.digest()).decode()[:-2] # Remove '=\n'

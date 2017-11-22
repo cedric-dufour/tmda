@@ -1189,12 +1189,12 @@ class SMTPServer(asyncore.dispatcher):
 
 def b64_encode(s):
     """base64 encoding without the trailing newline."""
-    return base64.encodestring(s)[:-1]
+    return base64.encodebytes(s.encode()).decode()[:-1]
 
 
 def b64_decode(s):
     """base64 decoding."""
-    return base64.decodestring(s)
+    return base64.decodebytes(s.encode()).decode()
 
 
 def process_message_fail(peer, mailfrom, rcpttos, data, auth_username):
