@@ -403,8 +403,8 @@ class LdapAuthenticator(RemoteAuthenticator):
         try:
             import ldap
         except ImportError:
-            raise ImportError('python-ldap ' \
-                '(http://www.python-ldap.org/) required.')
+            raise ImportError('Python LDAP ' \
+                '(https://github.com/pyldap/pyldap) required.')
 
         try:
             dn % ''

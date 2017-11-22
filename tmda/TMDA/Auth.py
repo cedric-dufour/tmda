@@ -255,8 +255,8 @@ class Auth(Util.Debugable):
             try:
                 import ldap
             except ImportError:
-                raise ValueError("Ldap not supported: python-ldap " + \
-                    "(http://python-ldap.sf.net/) required.")
+                raise ValueError("Python LDAP " + \
+                    "(https://github.com/pyldap/pyldap) required.")
             if self.__authremote['dn'] == '':
                 raise ValueError("Missing ldap dn (format ldap://host[:port]/dn)")
             try:
