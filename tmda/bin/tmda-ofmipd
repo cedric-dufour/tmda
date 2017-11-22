@@ -540,7 +540,7 @@ class SMTPSession(asynchat.async_chat):
 
         # Initialize object state
 
-        self.set_terminator('\r\n')
+        self.set_terminator(b'\r\n')
         self.init_static_state()
         self.init_dynamic_state()
 
@@ -612,6 +612,10 @@ class SMTPSession(asynchat.async_chat):
         """Initialize 'dynamic state' - that state which must be flushed
         when a STARTLS command is issued, according to the RFC."""
 
+        # SMTP UTF8 (RFC 6531)
+        # TODO: implement --strict-utf8 <-> SMTPUTF8 extension
+        self.__smtp_charset = 'utf-8'
+
         # SMTP AUTH
         self.__smtpauth = 0
         self.__auth_resp1 = None
@@ -626,11 +630,11 @@ class SMTPSession(asynchat.async_chat):
             self.__sasl_types.append('cram-md5')
         self.__auth_cram_md5_ticket = '<%s.%s@%s>' % (random.randrange(10000),
                                                       int(time.time()), FQDN)
-        self.__line = []
+        self.__line = []  # bytes
         self.__state = self.COMMAND
         self.__mailfrom = None
         self.__rcpttos = []
-        self.__data = ''
+        self.__data = b''  # bytes
 
     def _is_loopback(self, addr):
         '''Return True if addr is a loopback address.'''
@@ -672,7 +676,9 @@ class SMTPSession(asynchat.async_chat):
 
     # Overrides base class for convenience
     def push(self, msg):
-        asynchat.async_chat.push(self, msg + '\r\n')
+        if isinstance(msg, str):
+            msg = msg.encode(self.__smtp_charset)
+        asynchat.async_chat.push(self, msg + b'\r\n')
 
     # Implementation of base class abstract method
     def collect_incoming_data(self, data):
@@ -680,13 +686,14 @@ class SMTPSession(asynchat.async_chat):
 
     # Implementation of base class abstract method
     def found_terminator(self):
-        line = EMPTYSTRING.join(self.__line)
-        logger.debug('Data: %r', line)
+        line = b''.join(self.__line)
+        logger.debug('Data: %r', line.decode(self.__smtp_charset, errors='replace'))
         self.__line = []
         if self.__state == self.COMMAND:
             if not line:
                 self.push('500 Error: bad syntax')
                 return
+            line = line.decode(self.__smtp_charset, errors='strict')
             method = None
             i = line.find(' ')
             if i < 0:
@@ -707,12 +714,12 @@ class SMTPSession(asynchat.async_chat):
             # Remove extraneous carriage returns and de-transparency according
             # to RFC 2821, Section 4.5.2.
             data = []
-            for text in line.split('\r\n'):
-                if text and text[0] == '.':
+            for text in line.split(b'\r\n'):
+                if text and text[0] == b'.':
                     data.append(text[1:])
                 else:
                     data.append(text)
-            self.__data = NEWLINE.join(data)
+            self.__data = b'\n'.join(data)
 
             overquota = False
             if opts.throttlescript:
@@ -736,9 +743,10 @@ class SMTPSession(asynchat.async_chat):
             self.__rcpttos = []
             self.__mailfrom = None
             self.__state = self.COMMAND
-            self.set_terminator('\r\n')
+            self.set_terminator(b'\r\n')
             self.push(status)
         elif self.__state == self.AUTH:
+            line = line.decode(self.__smtp_charset, errors='strict')
             if line == '*':
                 # client canceled the authentication attempt
                 self.push('501 AUTH exchange cancelled')
@@ -866,7 +874,7 @@ class SMTPSession(asynchat.async_chat):
         self.auth_reset_state()
 
     def auth_challenge(self):
-        line = EMPTYSTRING.join(self.__line)
+        line = b''.join(self.__line).decode(self.__smtp_charset, errors='strict')
         if self.__auth_resp1 is None:
             # No initial response, issue first server challenge
             if self.__auth_sasl == 'plain':
@@ -970,7 +978,7 @@ class SMTPSession(asynchat.async_chat):
         # Resets the sender, recipients, and data, but not the greeting
         self.__mailfrom = None
         self.__rcpttos = []
-        self.__data = ''
+        self.__data = b''
         self.__state = self.COMMAND
         self.push('250 Ok')
 
@@ -982,7 +990,7 @@ class SMTPSession(asynchat.async_chat):
             self.push('501 Syntax: DATA')
             return
         self.__state = self.DATA
-        self.set_terminator('\r\n.\r\n')
+        self.set_terminator(b'\r\n.\r\n')
         self.push('354 End data with <CR><LF>.<CR><LF>')
 
     def smtp_AUTH(self, arg):
@@ -1046,7 +1054,7 @@ class CallbackProducer(object):
 
     def more(self):
         self._function()
-        return ''
+        return b''
 
 class SecureSMTPSession(SMTPSession):
     _start_ssl_values = (
@@ -1340,9 +1348,6 @@ defaultauthports = { 'imap': 143,
                      'ldap': 389,
                      # 'pop3s': 995,
                      }
-
-NEWLINE = '\n'
-EMPTYSTRING = ''
 
 
 # Runtime global variables
