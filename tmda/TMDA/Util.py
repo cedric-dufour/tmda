@@ -347,7 +347,7 @@ def make_date(timesecs=None):
     return email.utils.formatdate(timesecs, localtime=True)
 
 
-def file_to_dict(file, dict):
+def file_to_dict(file, dict_v):
     """Process and add then each line of a textfile to a dictionary."""
     for line in fileinput.input(file):
         line = line.strip()
@@ -359,13 +359,13 @@ def file_to_dict(file, dict):
             key = fields[0]
             key = key.lower()
             value = fields[1]
-            dict[key] = value
-    return dict
+            dict_v[key] = value
+    return dict_v
 
 
 def file_to_list(file):
     """Process and then append each line of file to list."""
-    list = []
+    list_v = []
     for line in fileinput.input(file):
         line = line.strip()
         # Comment or blank line?
@@ -373,8 +373,8 @@ def file_to_list(file):
             continue
         else:
             line = line.expandtabs().split('#')[0].strip()
-            list.append(line)
-    return list
+            list_v.append(line)
+    return list_v
 
 
 def runcmd(cmd, instr=None, stdout=None, stderr=None):
@@ -417,7 +417,7 @@ def writefile(contents, fullpathname):
         file.close()
 
 
-def append_to_file(str, fullpathname):
+def append_to_file(str_v, fullpathname):
     """Append a string to a text file if it isn't already in there."""
     if os.path.exists(fullpathname):
         for line in fileinput.input(fullpathname):
@@ -427,16 +427,16 @@ def append_to_file(str, fullpathname):
                 continue
             else:
                 line = line.expandtabs().split('#')[0].strip()
-                bare = str.expandtabs().split('#')[0].strip()
+                bare = str_v.expandtabs().split('#')[0].strip()
                 if bare.lower() == line:
                     fileinput.close()
                     return 0
     file = open(fullpathname, 'a+')
-    file.write(str.strip() + '\n')
+    file.write(str_v.strip() + '\n')
     file.close()
 
 
-def pager(str):
+def pager(str_v):
     """Display a string using a UNIX text pager such as less or more."""
     pager = os.environ.get('PAGER')
     if pager is None:
@@ -447,7 +447,7 @@ def pager(str):
                 pager = path
                 break
     try:
-        os.popen(pager, 'w').write(str)
+        os.popen(pager, 'w').write(str_v)
     except IOError:
         return
 
@@ -617,7 +617,7 @@ def sendmail(msgstr, envrecip, envsender):
         raise Errors.ConfigError("Invalid MAIL_TRANSPORT method: " + Defaults.MAIL_TRANSPORT)
 
 
-def decode_header(str):
+def decode_header(str_v):
     """Accept a possibly encoded message header as a string, and
     return a decoded string if it can be decoded.
 
@@ -629,13 +629,13 @@ def decode_header(str):
     try:
         from email import header
         parts = []
-        pairs = header.decode_header(str)
+        pairs = header.decode_header(str_v)
         for pair in pairs:
             parts.append(pair[0])
         decoded_string = ' '.join(parts)
         return decoded_string
     except email.errors.HeaderParseError:
-        return str
+        return str_v
 
 
 def headers_as_list(msg):
@@ -817,7 +817,7 @@ def db_insert(db, insert_sql, params):
         cursor.close()
 
 
-def findmatch(list, addrs):
+def findmatch(list_v, addrs):
     """Determine whether any of the passed e-mail addresses match a
     Unix shell-style wildcard pattern contained in list.  The
     comparison is case-insensitive.  Also, return the second half of
@@ -825,7 +825,7 @@ def findmatch(list, addrs):
     for address in addrs:
         if address:
             address = address.lower()
-            for p in list:
+            for p in list_v:
                 stringparts = p.split()
                 p = stringparts[0]
                 # Handle special @=domain.dom syntax.

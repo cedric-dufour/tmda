@@ -355,7 +355,7 @@ class InteractiveQueue(Queue):
 class Message:
     """A simple pending message class"""
     msg_size = 0
-    bytes = 'bytes'
+    str_bytes = 'bytes'
     confirm_accept_address = None
     def __init__(self, msgid, recipient = None, fullParse = False):
         self.msgid = msgid
@@ -533,18 +533,18 @@ class Message:
         if not self.msg_size:
             self.msg_size = len(self.show())
             if  self.msg_size == 1:
-                self.bytes =    self.bytes[:-1]
-        str = self.msgid + " ("
+                self.str_bytes =    self.str_bytes[:-1]
+        str_v = self.msgid + " ("
         if total:
-            str += "%s of %s / " % (count, total)
-        str += "%s %s)\n" % (self.msg_size, self.bytes)
+            str_v += "%s of %s / " % (count, total)
+        str_v += "%s %s)\n" % (self.msg_size, self.str_bytes)
 
         for hdr in Defaults.SUMMARY_HEADERS:
-            str += "%s %s: %s\n" % ('  >>',
+            str_v += "%s %s: %s\n" % ('  >>',
                                  hdr.capitalize()[:4].rjust(4),
                                  Util.decode_header(self.msgobj.get(hdr)))
 
         if mailto and self.getConfirmAddress():
-            str+= '<mailto:%s>' % self.confirm_accept_address
-        return str
+            str_v += '<mailto:%s>' % self.confirm_accept_address
+        return str_v
 

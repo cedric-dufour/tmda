@@ -793,8 +793,8 @@ def main():
         sender_dict[confirm_append_address] = None
     from_list = getaddresses(msgin.get_all('from', []))
     replyto_list = getaddresses(msgin.get_all('reply-to', []))
-    for list in from_list, replyto_list:
-        for a in list:
+    for list_v in from_list, replyto_list:
+        for a in list_v:
             emaddy = a[1]
             sender_dict[emaddy] = None
     sender_list = [ addr.lower() for addr in list(sender_dict.keys()) ]
