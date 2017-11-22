@@ -409,7 +409,7 @@ class LdapAuthenticator(RemoteAuthenticator):
         try:
             dn % ''
         except TypeError:
-            raise ValueError("LDAP URL must conain a '%s' placeholder")
+            raise ValueError("LDAP URL must contain a '%s' placeholder")
 
         RemoteAuthenticator.__init__(self, host, port)
         self._dn = dn
@@ -425,6 +425,40 @@ class LdapAuthenticator(RemoteAuthenticator):
             return True
         except ldap.LDAPError:
             logger.debug('ldap authentication failure details:', exc_info=True)
+
+        return False
+
+    def __repr__(self):
+        return '%s(%r, %r, %r)' % (self.__class__.__name__, self._host,
+               self._port, self._dn)
+
+class LdapsAuthenticator(RemoteAuthenticator):
+    def __init__(self, host, port, dn):
+        try:
+            import ldap
+        except ImportError:
+            raise ImportError('Python LDAP ' \
+                '(https://github.com/pyldap/pyldap) required.')
+
+        try:
+            dn % ''
+        except TypeError:
+            raise ValueError("LDAP URL must contain a '%s' placeholder")
+
+        RemoteAuthenticator.__init__(self, host, port)
+        self._dn = dn
+
+    def _plain_check(self, username, password, localip):
+        import ldap
+
+        (host, port) = self.remote_address(localip)
+        try:
+            ldap_obj = ldap.initialize('ldaps://%s:%s' % (host, port))
+            ldap_obj.simple_bind_s(self._dn % username, password)
+            ldap_obj.unbind_s()
+            return True
+        except ldap.LDAPError:
+            logger.debug('ldaps authentication failure details:', exc_info=True)
 
         return False
 
@@ -467,6 +501,8 @@ class AuthOptions(object):
             auth = Pop3Authenticator(host, port, use_apop=True)
         elif proto == 'ldap':
             auth = LdapAuthenticator(host, port, path)
+        elif proto == 'ldaps':
+            auth = LdapsAuthenticator(host, port, path)
         else:
             raise ValueError('Unsupported URL scheme: %s' % proto)
 
@@ -1322,6 +1358,7 @@ defaultauthports = { 'imap': 143,
                      'apop': 110,
                      'pop3': 110,
                      'ldap': 389,
+                     'ldaps': 636,
                      # 'pop3s': 995,
                      }
 
@@ -1530,10 +1567,11 @@ authgroup.add_option("-R", "--remoteauth",
 """Protocol and host to check username and password. PROTO can be one of
 the following: 'imap' (IMAP4 server), 'imaps' (IMAP4 server over SSL),
 'pop3' (POP3 server), 'apop' (POP3 server with APOP authentication),
-'ldap' (LDAP server).  Optional :PORT defaults to the standard port for
-the specified protocol (143 for imap, 993 for imaps, 110 for
-pop3/apop, and 389 for ldap).  /DN is mandatory for ldap and should
-contain a '%s' identifying the username. Examples: '-R
+'ldap' (LDAP server), 'ldaps' (LDAP server over SSL).
+Optional :PORT defaults to the standard port for the specified protocol
+(143 for imap, 993 for imaps, 110 for pop3/apop, 389 for ldap and 636 for
+ldaps).  /DN is mandatory for ldap and should contain a '%s' identifying
+the username. Examples: '-R
 imaps://myimapserver.net', '-R pop3://mypopserver.net:2110', '-R
 ldap://example.com/cn=%s,dc=host,dc=com'""")
 
