@@ -174,7 +174,6 @@ from io import StringIO
 from email.utils import parseaddr, getaddresses
 import email
 import fileinput
-import string
 import time
 
 
@@ -260,11 +259,11 @@ if envelope_sender == '':
 # This is often the case when the message is sent between local users
 # on a Sendmail system.
 elif (Defaults.MAIL_TRANSFER_AGENT == 'sendmail' and
-      len(string.split(envelope_sender,'@')) == 1):
+      len(envelope_sender.split('@')) == 1):
     envelope_sender = envelope_sender + '@' + Util.gethostname()
 # Ditto for envelope_recipient
 if (Defaults.MAIL_TRANSFER_AGENT == 'sendmail' and
-    len(string.split(envelope_recipient,'@')) == 1):
+    len(envelope_recipient.split('@')) == 1):
     envelope_recipient = envelope_recipient + '@' + Util.gethostname()
 
 # recipient_address is the original address the message was sent to,
@@ -661,8 +660,8 @@ def verify_sender_cookie(sender_address,sender_cookie):
 
 def verify_keyword_cookie(keyword_cookie):
     """Verify a keyword cookie."""
-    parts = string.split(keyword_cookie, '.')
-    keyword = string.join(parts[:-1], '.')
+    parts = keyword_cookie.split('.')
+    keyword = '.'.join(parts[:-1])
     mac = parts[-1:][0]
     newmac = Cookie.make_keywordmac(keyword)
     # Accept the message only if the HMAC can be verified.

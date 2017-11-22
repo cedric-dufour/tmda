@@ -75,7 +75,7 @@ class Macro:
     """Macro definition as parsed by the filter parser."""
 
     macro_words = re.compile(r'([_a-zA-Z][_\w]*)')
-    macro_chars = '_' + string.digits + string.letters
+    macro_chars = '_' + string.digits + string.ascii_letters
 
     def __init__(self, name):
         self.name = name
@@ -408,10 +408,10 @@ class FilterParser:
             if self.bol_comment.match(original_line):
                 continue
             # substitute space characters for tab characters
-            line = string.replace(original_line, '\t', ' ')
+            line = original_line.replace('\t', ' ')
             # lose end-of-line comments and trailing whitespace
-            line = string.split(line, ' #')[0]
-            line = string.rstrip(line)
+            line = line.split(' #')[0]
+            line = line.rstrip()
             # empty line may signify end of current rule
             if line == '':
                 if rule:
@@ -621,7 +621,7 @@ class FilterParser:
             raise Error('"%s": unrecognized filter rule' % rule_line.split()[0])
         else:
             source = mo.group(1)
-            match_line = string.lstrip(rule_line[mo.end():])
+            match_line = rule_line[mo.end():].lstrip()
             args, match_line = self.__parseargs(self.arguments[source.lower()],
                                                 match_line)
             mo = self.matches.match(match_line)
@@ -630,7 +630,7 @@ class FilterParser:
                 raise Error('"%s": missing <match> field' % source)
             else:
                 match = mo.group(2) or mo.group(3)
-                action_line = string.lstrip(match_line[mo.end():])
+                action_line = match_line[mo.end():].lstrip()
                 actions = self.__buildactions(action_line, source)
                 rule = (source, args, match, actions, self.__file().rule_lineno)
         return rule
@@ -643,7 +643,7 @@ class FilterParser:
         """
         actions = None
         if action_line[:len('tag ')] == 'tag ':
-            action_line = string.lstrip(action_line[len('tag '):])
+            action_line = action_line[len('tag '):].lstrip()
             while len(action_line) > 0:
                 mo = self.tag_action.match(action_line)
                 if not mo:
@@ -651,7 +651,7 @@ class FilterParser:
                     errstr = '"%s": ' % source
                     errstr += 'malformed header field or missing <action>'
                     raise Error(errstr)
-                header = string.lower(mo.group(1))
+                header = mo.group(1).lower()
                 action = (mo.group(2) or "") + (mo.group(4) or mo.group(5))
                 if action:
                     if not actions:
@@ -663,7 +663,7 @@ class FilterParser:
                 else:
                     # don't know how we could get here
                     raise Error('unexpected error')
-                action_line = string.lstrip(action_line[mo.end()+1:])
+                action_line = action_line[mo.end()+1:].lstrip()
         else:
             mo = self.in_action.match(action_line)
             if mo:
@@ -727,9 +727,9 @@ class FilterParser:
         cdb = cdb.init(pathname)
         found_match = 0
         for key in keys:
-            if key and string.lower(key) in cdb:
+            if key and key.lower() in cdb:
                 found_match = 1
-                cdb_value = cdb[string.lower(key)]
+                cdb_value = cdb[key.lower()]
                 # If there is an entry for this key,
                 # we consider it an overriding action
                 # specification.
@@ -748,9 +748,9 @@ class FilterParser:
         dbm = dbm.open(pathname, 'r')
         found_match = 0
         for key in keys:
-            if key and string.lower(key) in dbm:
+            if key and key.lower() in dbm:
                 found_match = 1
-                dbm_value = dbm[string.lower(key)]
+                dbm_value = dbm[key.lower()]
                 # If there is an entry for this key,
                 # we consider it an overriding action
                 # specification.
@@ -883,7 +883,7 @@ class FilterParser:
         line = None
         found_match = None
         for (source, args, match, actions, lineno) in self.filterlist:
-            source = string.lower(source)
+            source = source.lower()
             # set up the keys for searching
             if source.startswith('from') and senders:
                 keys = senders
@@ -893,7 +893,7 @@ class FilterParser:
             #
             # regular 'from' or 'to' addresses
             if source in ('from', 'to'):
-                found_match = Util.findmatch([string.lower(match)], keys)
+                found_match = Util.findmatch([match.lower()], keys)
                 if found_match:
                     break
             # 'from-file' or 'to-file', including autocdb functionality
@@ -1101,7 +1101,7 @@ class FilterParser:
             if source == 'size' and msg_size:
                 match_list = list(match)
                 operator = match_list[0] # first character should be < or >
-                bytes = string.join(match_list,'')[1:] # rest is the size
+                bytes = ''.join(match_list)[1:] # rest is the size
                 found_match = None
                 if operator == '<':
                     found_match = int(msg_size) < int(bytes)

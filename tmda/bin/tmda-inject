@@ -98,7 +98,7 @@ from TMDA import Util
 
 from email.utils import formataddr, getaddresses, parseaddr
 import socket
-import string
+from string import capwords
 
 
 # Just check Defaults.FILTER_OUTGOING for syntax errors and possible
@@ -167,7 +167,7 @@ def make_field(cookie_type, cookie_option, from_address, to_address):
         field = cookie_option
     elif cookie_type in ('ext','extension') and cookie_option:
         # Send a message with a tagged (extension added) address.
-        (username, hostname) = string.split(from_address,'@')
+        (username, hostname) = from_address.split('@')
         field = username + Defaults.RECIPIENT_DELIMITER + \
                 cookie_option + '@' + hostname
     elif cookie_type in ('kw','keyword') and cookie_option:
@@ -265,7 +265,7 @@ def inject_message(resending,
         if not (cookie_type in ('python','shell', None)):
             field = message_format(field, full_name,
                                    Defaults.MESSAGE_TAG_HEADER_STYLE)
-        nice_header = string.capwords(header.replace('-', ' ')).replace(' ', '-')
+        nice_header = capwords(header.replace('-', ' ')).replace(' ', '-')
         nice_headers[nice_header] = field
     Util.add_headers(msg, nice_headers)
     # Optionally, log this transmission.
@@ -307,7 +307,7 @@ def main():
         resending = None
     if not fullname:
         fullname = Defaults.FULLNAME
-    if not from_address or len(string.split(from_address,'@')) != 2:
+    if not from_address or len(from_address.split('@')) != 2:
         from_address = Defaults.USERNAME + '@' + Defaults.HOSTNAME
 
     # If recipients were provided as arguments, use them.
@@ -315,8 +315,7 @@ def main():
         address_list = args
     # If running through qfilter, get recipient list from QMAILRCPTS.
     elif 'QMAILRCPTS' in os.environ:
-        address_list = string.split(string.lower
-                                    (os.environ['QMAILRCPTS']),'\n')[:-1]
+        address_list = os.environ['QMAILRCPTS'].lower().split('\n')[:-1]
     # Otherwise get recipients from the headers.
     else:
         address_list = []
@@ -347,7 +346,7 @@ def main():
         x_tmda = msgout.get('x-tmda')
         log_msg = '%s: %s' % ('X-TMDA', x_tmda)
         # X-TMDA should only have one field.
-        if len(string.split(x_tmda)) == 1:
+        if len(x_tmda.split()) == 1:
             actions = { 'from' : FilterParser.splitaction(x_tmda) }
         # Delete `X-TMDA' before sending.
         del msgout['x-tmda']
