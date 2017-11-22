@@ -377,11 +377,11 @@ def file_to_list(file):
     return list_v
 
 
-def runcmd(cmd, instr=None, stdout=None, stderr=None):
+def runcmd(cmd, input_mixed=None, stdout=None, stderr=None):
     """Run a command, wait for it to complete, and return a tuple of
-    (return value, stdout text, stderr text). instr is a string to
-    pass as input. stdout and stderr can take the same forms as their
-    subprocess.Popen equivalents.
+    (return value, stdout text, stderr text). input_mixed is a string
+    or a bytes string to pass as input. stdout and stderr can take the
+    same forms as their subprocess.Popen equivalents.
     """
     use_shell = False
     if isinstance(cmd, str):
@@ -389,16 +389,22 @@ def runcmd(cmd, instr=None, stdout=None, stderr=None):
 
     process = subprocess.Popen(cmd, stdin=PIPE, stdout=stdout, stderr=stderr,
                                shell=use_shell)
-    (stdoutdata, stderrdata) = process.communicate(instr)
+    if isinstance(input_mixed, str):
+        input_mixed = input_mixed.encode(sys.stdin.encoding)
+    (stdoutdata, stderrdata) = process.communicate(input_mixed)
+    if stdoutdata is not None:
+        stdoutdata = stdoutdata.decode(sys.stdout.encoding)
+    if stderrdata is not None:
+        stderrdata = stderrdata.decode(sys.stderr.encoding)
 
     return (process.returncode, stdoutdata, stderrdata)
 
 
-def runcmd_checked(cmd, instr=None, stdout=None, stderr=None):
+def runcmd_checked(cmd, input_mixed=None, stdout=None, stderr=None):
     """Version of runcmd that doesn't return the exit code or
     signal, but raises an exception for errors and signals.
     """
-    (r, stdoutdata, stderrdata) = runcmd(cmd, instr, stdout, stderr)
+    (r, stdoutdata, stderrdata) = runcmd(cmd, input_mixed, stdout, stderr)
     if r > 0:
         raise Exception('command %r exited with error %d' % (cmd, r))
     elif r < 0:
