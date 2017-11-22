@@ -34,9 +34,9 @@ from email.utils import formataddr, parseaddr
 import os
 import time
 
-import Defaults
-import Util
-import Version
+from . import Defaults
+from . import Util
+from . import Version
 
 
 DEFAULT_CHARSET = 'US-ASCII'
@@ -119,7 +119,7 @@ class AutoResponse:
                        'Content-Transfer-Encoding', 'Content-Disposition',
                        'Content-Description']
         for h in bad_headers:
-            if self.bouncemsg.has_key(h):
+            if h in self.bouncemsg:
                 del self.bouncemsg[h]
         textpart = MIMEText(self.bouncemsg.get_payload(), 'plain',
                             self.bodycharset)
@@ -156,7 +156,7 @@ class AutoResponse:
         # the main body of the message.
         self.mimemsg['Content-Disposition'] = 'inline'
         # fold the template headers into the main entity.
-        for k, v in self.bouncemsg.items():
+        for k, v in list(self.bouncemsg.items()):
             ksplit = k.split('.', 1)
             if len(ksplit) == 1:
                 hdrcharset = DEFAULT_CHARSET
@@ -167,8 +167,7 @@ class AutoResponse:
             # headers like `From:' which contain e-mail addresses
             # might need the "Fullname" portion encoded, but the
             # address portion must never be encoded.
-            if k.lower() in map(lambda s: s.lower(),
-                                Defaults.TEMPLATE_EMAIL_HEADERS):
+            if k.lower() in [s.lower() for s in Defaults.TEMPLATE_EMAIL_HEADERS]:
                 name, addr = parseaddr(v)
                 if name and hdrcharset.lower() not in ('ascii', 'us-ascii'):
                     h = Header(name, hdrcharset, errors='replace')
@@ -178,8 +177,7 @@ class AutoResponse:
             # so we need to decode that first before encoding the
             # entire header value.
             elif hdrcharset.lower() not in ('ascii', 'us-ascii') and \
-                     k.lower() in map(lambda s: s.lower(),
-                                      Defaults.TEMPLATE_ENCODED_HEADERS):
+                     k.lower() in [s.lower() for s in Defaults.TEMPLATE_ENCODED_HEADERS]:
                 h = Header(charset=hdrcharset, header_name=k, errors='replace')
                 decoded_seq = decode_header(v)
                 for s, charset in decoded_seq:
@@ -195,12 +193,12 @@ class AutoResponse:
         # References
         refs = []
         for h in ['references', 'message-id']:
-            if self.msgin.has_key(h):
+            if h in self.msgin:
                 refs = refs + self.msgin.get(h).split()
         if refs:
             self.mimemsg['References'] = '\n\t'.join(refs)
         # In-Reply-To
-        if self.msgin.has_key('message-id'):
+        if 'message-id' in self.msgin:
             self.mimemsg['In-Reply-To'] =  self.msgin.get('message-id')
         self.mimemsg['To'] = self.recipient
         # Some auto responders respect this header.
@@ -237,7 +235,7 @@ class AutoResponse:
                                           Util.normalize_sender(self.recipient))
         # Create ~/.tmda/responses if necessary.
         if not os.path.exists(Defaults.RESPONSE_DIR):
-            os.makedirs(Defaults.RESPONSE_DIR, 0700)
+            os.makedirs(Defaults.RESPONSE_DIR, 0o700)
         fp = open(os.path.join(Defaults.RESPONSE_DIR,
                                response_filename), 'w')
         fp.close()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2001-2007 Jason R. Mastaler <jason@mastaler.com>
 #
@@ -55,17 +55,17 @@ for path in os.listdir('.'):
     else:
         mb = mailbox.PortableUnixMailbox(open(path))
     while 1:
-        msg = mb.next()
+        msg = next(mb)
         if not msg:
             break
         else:
             for hdr in hdrs:
-                if msg.has_key(hdr):
+                if hdr in msg:
                     address = msg.getaddr(hdr)[1]
                     if address is not None:
                         address = address.lower()
                         uniq[address] = address
                     
-for a in uniq.keys():
+for a in list(uniq.keys()):
     if a:
-        print a
+        print(a)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2001-2007 Jason R. Mastaler <jason@mastaler.com>
 #
@@ -63,7 +63,7 @@ parser = OptionParser(option_list=opt_list, version=Version.TMDA,
 (opts, args) = parser.parse_args()
 
 if opts.full_version:
-    print Version.ALL
+    print(Version.ALL)
     sys.exit()
 if opts.config_file:
      os.environ['TMDARC'] = opts.config_file
@@ -99,14 +99,14 @@ def main():
 
     try:
         addr.verify(sender_address)
-        print "STATUS: VALID"
+        print("STATUS: VALID")
         if addr.tag() in Defaults.TAGS_DATED:
-            print "EXPIRES: %s" % formattime(addr.timestamp())
-    except Address.ExpiredAddressError, msg:
-        print "STATUS:", msg
-        print "EXPIRED: %s" % formattime(addr.timestamp())
-    except Address.AddressError, msg:
-        print "STATUS:", msg
+            print("EXPIRES: %s" % formattime(addr.timestamp()))
+    except Address.ExpiredAddressError as msg:
+        print("STATUS:", msg)
+        print("EXPIRED: %s" % formattime(addr.timestamp()))
+    except Address.AddressError as msg:
+        print("STATUS:", msg)
 
 
 if __name__ == '__main__':

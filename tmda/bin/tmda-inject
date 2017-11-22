@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2001-2007 Jason R. Mastaler <jason@mastaler.com>
 #
@@ -83,7 +83,7 @@ parser = OptionParser(option_list=opt_list, description=opt_desc,
 (opts, args) = parser.parse_args()
 
 if opts.full_version:
-    print Version.ALL
+    print(Version.ALL)
     sys.exit()
 if opts.config_file:
     os.environ['TMDARC'] = opts.config_file
@@ -177,12 +177,12 @@ def make_field(cookie_type, cookie_option, from_address, to_address):
         # this is currently broken, and needs more work
         field = str(eval(cookie_option))
     elif cookie_type == 'shell':
-        import commands
-        shell_stat, shell_out = commands.getstatusoutput(cookie_option)
+        import subprocess
+        shell_stat, shell_out = subprocess.getstatusoutput(cookie_option)
         if shell_stat == 0:
             field = shell_out
         else:
-            raise IOError, shell_out
+            raise IOError(shell_out)
     elif not cookie_type:
         # cookie_type == None means field is a text string
         field = cookie_option
@@ -227,7 +227,7 @@ def inject_message(resending,
                                      Defaults.MESSAGE_FROM_STYLE)
     # If the Mail-Followup-To header contains an untagged address, we
     # need to tag that as well.
-    if msg.has_key('mail-followup-to'):
+    if 'mail-followup-to' in msg:
         mft_list = getaddresses(msg.get_all('mail-followup-to'))
         new_mft_list = []
         for a in mft_list:
@@ -256,7 +256,7 @@ def inject_message(resending,
     # Optionally, remove some headers.
     Util.purge_headers(msg, Defaults.PURGED_HEADERS_CLIENT)
     # Create the custom headers.
-    custom_headers = [ h for h in actions.keys()
+    custom_headers = [ h for h in list(actions.keys())
                         if h not in ('from', 'envelope', 'resent-from') ]
     nice_headers = {}
     for header in custom_headers:
@@ -283,7 +283,7 @@ def inject_message(resending,
     # Remove any custom headers we added for this recipient from the
     # message object, else all subsequent recipients will receive them
     # unconditionally.
-    Util.purge_headers(msg, nice_headers.keys())
+    Util.purge_headers(msg, list(nice_headers.keys()))
 
 
 ######
@@ -296,7 +296,7 @@ def main():
     actions = None
     log_msg = None
 
-    if msgout.has_key('resent-from'):
+    if 'resent-from' in msgout:
         # We must be resending (bouncing) the message.
         fullname, from_address = parseaddr(msgout.get
                                            ('resent-from'))
@@ -314,7 +314,7 @@ def main():
     if args:
         address_list = args
     # If running through qfilter, get recipient list from QMAILRCPTS.
-    elif os.environ.has_key('QMAILRCPTS'):
+    elif 'QMAILRCPTS' in os.environ:
         address_list = string.split(string.lower
                                     (os.environ['QMAILRCPTS']),'\n')[:-1]
     # Otherwise get recipients from the headers.
@@ -342,7 +342,7 @@ def main():
                 address_list.append(address)
 
     # Check for the `X-TMDA' override header.
-    if msgout.has_key('x-tmda'):
+    if 'x-tmda' in msgout:
         x_tmda_over = 1
         x_tmda = msgout.get('x-tmda')
         log_msg = '%s: %s' % ('X-TMDA', x_tmda)
@@ -352,7 +352,7 @@ def main():
         # Delete `X-TMDA' before sending.
         del msgout['x-tmda']
     # Optionally, parse subject for `X-TMDA'.
-    if (Defaults.X_TMDA_IN_SUBJECT and msgout.has_key('subject') and
+    if (Defaults.X_TMDA_IN_SUBJECT and 'subject' in msgout and
         x_tmda_over is None):
         sub = msgout.get('subject')
         subsplit = sub.split(None, 2)
@@ -371,7 +371,7 @@ def main():
     # message, not once per recipient of the message.
 
     # Prepend a Received header.
-    if os.environ.has_key('TMDA_OFMIPD_RECEIVED'):
+    if 'TMDA_OFMIPD_RECEIVED' in os.environ:
         # tmda-ofmipd
         msgout._headers.insert(0, ('Received',
                                    (os.environ.get('TMDA_OFMIPD_RECEIVED'))))
@@ -383,19 +383,19 @@ def main():
                                       Util.make_date())))
     # Possibly add a `Date' field.
     if ((Defaults.TMDAINJECT and 'd' in list(Defaults.TMDAINJECT))
-        or not msgout.has_key('date')):
+        or 'date' not in msgout):
         del msgout['Date']
         msgout['Date'] = Util.make_date()
     # Possibly add a `Message-ID' field.
     if ((Defaults.TMDAINJECT and 'i' in list(Defaults.TMDAINJECT))
-        or not msgout.has_key('message-id')):
+        or 'message-id' not in msgout):
         del msgout['Message-ID']
         msgout['Message-ID'] = Util.make_msgid()
     # Add an `X-Delivery-Agent' header.
     del msgout['X-Delivery-Agent']
     msgout['X-Delivery-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
     # Possibly add a Mail-Followup-To field if one doesn't exist.
-    if Defaults.MAIL_FOLLOWUP_TO and not msgout.has_key('mail-followup-to'):
+    if Defaults.MAIL_FOLLOWUP_TO and 'mail-followup-to' not in msgout:
         if isinstance(Defaults.MAIL_FOLLOWUP_TO, str):
             if os.path.isfile(Defaults.MAIL_FOLLOWUP_TO):
                 mft_addrs = file(Defaults.MAIL_FOLLOWUP_TO, 'r').readlines()

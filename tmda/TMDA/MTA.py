@@ -25,9 +25,9 @@
 import os
 import sys
 
-import Deliver
-import Errors
-import Util
+from . import Deliver
+from . import Errors
+from . import Util
 
 
 class MTA:
@@ -122,4 +122,4 @@ def init(mta, default_delivery):
     elif mta == 'sendmail':
         return Sendmail(default_delivery)
     else:
-        raise Errors.ConfigError, "Unsupported MAIL_TRANSFER_AGENT: " + mta
+        raise Errors.ConfigError("Unsupported MAIL_TRANSFER_AGENT: " + mta)

@@ -40,7 +40,7 @@ class MissingEnvironmentVariable(TMDAError):
     def __init__(self, varname):
         TMDAError.__init__(self)
         self.varname = varname
-        print 'Missing environment variable:', self.varname
+        print('Missing environment variable:', self.varname)
 
 class AddressError(TMDAError):
     """Address errors."""

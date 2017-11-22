@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 
-print 'FAKE SENDMAIL ARGS:', sys.argv
+print('FAKE SENDMAIL ARGS:', sys.argv)
 
 for line in sys.stdin:
-    print line,
+    print(line, end=' ')
 
 sys.exit(0)

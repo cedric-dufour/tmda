@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2001-2007 Jason R. Mastaler <jason@mastaler.com>
 #
@@ -129,7 +129,7 @@ parser = OptionParser(option_list=opt_list, description=opt_desc,
 (opts, args) = parser.parse_args()
 
 if opts.full_version:
-    print Version.ALL
+    print(Version.ALL)
     sys.exit()
 if opts.config_file:
     os.environ['TMDARC'] = opts.config_file
@@ -145,7 +145,7 @@ if opts.environ:
         except (KeyError, ValueError):
             parser.error('bad environment key-value pair - "%s"' % pair)
 if opts.vhomescript:
-    if os.environ.has_key('EXT') and os.environ.has_key('HOST'):
+    if 'EXT' in os.environ and 'HOST' in os.environ:
         setvuserhomedir(opts.vhomescript)
 
 
@@ -170,7 +170,7 @@ from TMDA import MTA
 from TMDA import Util
 from TMDA.Queue.Queue import Queue
 
-from cStringIO import StringIO
+from io import StringIO
 from email.utils import parseaddr, getaddresses
 import email
 import fileinput
@@ -374,7 +374,7 @@ def autorespond_to_sender(sender):
                         'List-Archive', 'Mailing-List', 'X-Mailing-List',
                         'X-ML-Name', 'X-List']
         for hdr in list_headers:
-            if msgin.has_key(hdr):
+            if hdr in msgin:
                 guilty_header = '%s: %s' % (hdr, msgin.get(hdr))
                 break
     # "Precedence:" value junk, bulk, or list
@@ -526,8 +526,7 @@ def verify_confirm_cookie(confirm_cookie, confirm_action):
                     parseaddr(msg.get('x-primary-address'))[1],
                     parseaddr(msg.get('return-path'))[1])
                 if not confirm_append_addr:
-                    raise IOError, \
-                          confirmed_mailid + ' has no Return-Path header!'
+                    raise IOError(confirmed_mailid + ' has no Return-Path header!')
                 if Defaults.CONFIRM_APPEND:
                     if Util.append_to_file(confirm_append_addr,
                                            Defaults.CONFIRM_APPEND) != 0:
@@ -585,7 +584,7 @@ def dispose_expired_dated(cookie_date):
     havedefault = False
     # go through all of the times, and convert them into seconds
     # default becomes "0", saving the symbolic name logging
-    for k,v in Defaults.ACTION_EXPIRED_DATED.iteritems():
+    for k,v in Defaults.ACTION_EXPIRED_DATED.items():
         if k != 'default':
             templist.append((Util.seconds(k),v,k))
         else:
@@ -641,8 +640,8 @@ def verify_dated_cookie(dated_cookie):
             elif type(Defaults.ACTION_EXPIRED_DATED) is not dict:
                 errmsg = 'ACTION_EXPIRED_DATED is wrong type (%s). ' % \
                     type(Defaults.ACTION_EXPIRED_DATED)
-                raise TypeError, errmsg + \
-                    'Must be string or dictionary'
+                raise TypeError(errmsg + \
+                    'Must be string or dictionary')
             else:
                 dispose_expired_dated(cookie_date)
 
@@ -654,7 +653,7 @@ def verify_sender_cookie(sender_address,sender_cookie):
         addr.verify(sender_address)
         logit("OK", "good_sender_cookie")
         mta.deliver(msgin)
-    except Address.AddressError, msg:
+    except Address.AddressError as msg:
         do_default_action(Defaults.ACTION_FAIL_SENDER.lower(),
                           'action_fail_sender',
                           'bounce_fail_sender.txt')
@@ -799,7 +798,7 @@ def main():
         for a in list:
             emaddy = a[1]
             sender_dict[emaddy] = None
-    sender_list = [ addr.lower() for addr in sender_dict.keys() ]
+    sender_list = [ addr.lower() for addr in list(sender_dict.keys()) ]
     # Process confirmation messages first.
     confirm_done_hdr = msgin.get('x-tmda-confirm-done')
     if confirm_done_hdr:
@@ -852,16 +851,16 @@ def main():
     # The message didn't match the filter file, so check if it was
     # sent to a 'tagged' address.
     # Dated tag?
-    if (cookie_type in map(lambda s: s.lower(), Defaults.TAGS_DATED)) \
+    if (cookie_type in [s.lower() for s in Defaults.TAGS_DATED]) \
            and cookie_value:
         verify_dated_cookie(cookie_value)
     # Sender tag?
-    elif (cookie_type in map(lambda s: s.lower(), Defaults.TAGS_SENDER)) \
+    elif (cookie_type in [s.lower() for s in Defaults.TAGS_SENDER]) \
              and cookie_value:
         sender_address = globals().get('envelope_sender')
         verify_sender_cookie(sender_address, cookie_value)
     # Keyword tag?
-    elif (cookie_type in map(lambda s: s.lower(), Defaults.TAGS_KEYWORD)) \
+    elif (cookie_type in [s.lower() for s in Defaults.TAGS_KEYWORD]) \
              and cookie_value:
         verify_keyword_cookie(cookie_value)
     # If the message gets this far (i.e, was not sent to a tagged

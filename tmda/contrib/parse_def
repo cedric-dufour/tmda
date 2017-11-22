@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2009 Kevin Goodsell <kevin-opensource@omegacrash.net>
 #
@@ -36,7 +36,7 @@ class ConfigVariable(object):
         self.name = name
         self.text = text
 
-class ParseError(StandardError):
+class ParseError(Exception):
     pass
 
 def variables(text):
@@ -366,7 +366,7 @@ def add_prefix(prefix, text):
 
 class Replacer(object):
     def __init__(self, regex, replacements, default=''):
-        if isinstance(regex, basestring):
+        if isinstance(regex, str):
             self._regex = re.compile(regex)
         else:
             self._regex = regex
@@ -403,18 +403,18 @@ class Formatter(object):
 class DebugTextFormatter(Formatter):
     def write(self):
         for var in self.variables:
-            print >> self.out, '== Header =='
-            print >> self.out, var.name
+            print('== Header ==', file=self.out)
+            print(var.name, file=self.out)
 
             for frag in text_fragments(var.text):
-                print >> self.out, '%s' % frag,
+                print('%s' % frag, end=' ', file=self.out)
 
 class HtmlFormatter(Formatter):
     def _write(self, level, text, *args):
         if args:
             text = text % args
         indent = '  ' * level
-        print >> self.out, add_prefix(indent, text)
+        print(add_prefix(indent, text), file=self.out)
 
     _escape = Replacer(r'[<>&]',
         {
@@ -439,7 +439,7 @@ class HtmlFormatter(Formatter):
 
         elif isinstance(frag, DefinitionList):
             self._write(level, '<dl>')
-            for (name, defn) in frag.items():
+            for (name, defn) in list(frag.items()):
                 self._write(level+1, '<dt>%s</dt>', self._escape(name))
                 self._write(level+1, '<dd>')
                 self._write(level+2, self._escape(defn))
@@ -448,7 +448,7 @@ class HtmlFormatter(Formatter):
 
         elif isinstance(frag, List):
             self._write(level, '<ul>')
-            for item in frag.items():
+            for item in list(frag.items()):
                 self._write(level+1, '<li>')
                 self._write(level+2, self._escape(item))
                 self._write(level+1, '</li>')
@@ -493,7 +493,7 @@ class ManFormatter(Formatter):
     def _write(self, text, *args):
         if args:
             text = text % args
-        print >> self.out, text
+        print(text, file=self.out)
 
     def _date(self):
         import time
@@ -527,13 +527,13 @@ class ManFormatter(Formatter):
             self._write('.ft')
 
         elif isinstance(frag, DefinitionList):
-            for (name, defn) in frag.items():
+            for (name, defn) in list(frag.items()):
                 self._write('.TP')
                 self._write(r'.B %s', self._escape_preformatted(name))
                 self._write(self._escape_text(defn))
 
         elif isinstance(frag, List):
-            for item in frag.items():
+            for item in list(frag.items()):
                 self._write(r'.IP \(bu')
                 self._write(self._escape_text(item))
 
@@ -567,7 +567,7 @@ class MoinMoinFormatter(Formatter):
     def _write(self, text, *args):
         if args:
             text = text % args
-        print >> self.out, text
+        print(text, file=self.out)
 
     _line_sep = re.compile(r'\s*\n\s*', re.MULTILINE)
     def _join_lines(self, text):
@@ -586,13 +586,13 @@ class MoinMoinFormatter(Formatter):
             self._write('{{{\n%s\n}}}\n', frag.formatted())
 
         elif isinstance(frag, DefinitionList):
-            for (name, defn) in frag.items():
+            for (name, defn) in list(frag.items()):
                 text = self._join_lines(defn)
                 self._write(' %s:: %s', name, self._dewikify(text))
             self._write('')
 
         elif isinstance(frag, List):
-            for item in frag.items():
+            for item in list(frag.items()):
                 text = self._join_lines(item)
                 self._write(' * %s', self._dewikify(text))
             self._write('')

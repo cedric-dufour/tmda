@@ -293,7 +293,7 @@ class IpAuthMapTest(unittest.TestCase):
         # Cheap way of "importing" a script.
         self.module = {}
         ofmipd = os.path.join(lib.util.rootDir, 'bin', 'tmda-ofmipd')
-        execfile(ofmipd, self.module)
+        exec(compile(open(ofmipd).read(), ofmipd, 'exec'), self.module)
 
     def testAuthMapRead(self):
         RemoteAuthenticator = self.module['RemoteAuthenticator']

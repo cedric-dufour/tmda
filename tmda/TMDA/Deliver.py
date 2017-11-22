@@ -30,15 +30,15 @@ import stat
 import sys
 import time
 
-import Defaults
-import Errors
-import Util
+from . import Defaults
+from . import Errors
+from . import Util
 
 
 def alarm_handler(signum, frame):
     """Handle an alarm."""
-    print 'Signal handler called with signal', signum
-    raise IOError, "Couldn't open device!"
+    print('Signal handler called with signal', signum)
+    raise IOError("Couldn't open device!")
 
 
 def lock_file(fp):
@@ -110,8 +110,7 @@ class Deliver:
             self.delivery_dest = 'stdout'
         # Unknown delivery instruction.
         else:
-            raise Errors.DeliveryError, \
-                  'Delivery instruction "%s" is not recognized!' % self.option
+            raise Errors.DeliveryError('Delivery instruction "%s" is not recognized!' % self.option)
         return (self.delivery_type, self.delivery_dest)
 
     def deliver(self):
@@ -129,13 +128,11 @@ class Deliver:
         elif type == 'mmdf':
             # Ensure destination path exists.
             if not os.path.exists(dest):
-                raise Errors.DeliveryError, \
-                      'Destination "%s" does not exist!' % dest
+                raise Errors.DeliveryError('Destination "%s" does not exist!' % dest)
             # Refuse to deliver to an mmdf if it's a symlink, to
             # prevent symlink attacks.
             elif os.path.islink(dest):
-                raise Errors.DeliveryError, \
-                      'Destination "%s" is a symlink!' % dest
+                raise Errors.DeliveryError('Destination "%s" is a symlink!' % dest)
             else:
                 # don't wrap headers, escape From, add From_ line
                 self.__deliver_mmdf(Util.msg_as_string(self.msg, 0, 1, 1),
@@ -143,13 +140,11 @@ class Deliver:
         elif type == 'mbox':
             # Ensure destination path exists.
             if not os.path.exists(dest):
-                raise Errors.DeliveryError, \
-                      'Destination "%s" does not exist!' % dest
+                raise Errors.DeliveryError('Destination "%s" does not exist!' % dest)
             # Refuse to deliver to an mbox if it's a symlink, to
             # prevent symlink attacks.
             elif os.path.islink(dest):
-                raise Errors.DeliveryError, \
-                      'Destination "%s" is a symlink!' % dest
+                raise Errors.DeliveryError('Destination "%s" is a symlink!' % dest)
             else:
                 # don't wrap headers, escape From, add From_ line
                 self.__deliver_mbox(Util.msg_as_string(self.msg, 0, 1, 1),
@@ -157,8 +152,7 @@ class Deliver:
         elif type == 'maildir':
             # Ensure destination path exists.
             if not os.path.exists(dest):
-                raise Errors.DeliveryError, \
-                      'Destination "%s" does not exist!' % dest
+                raise Errors.DeliveryError('Destination "%s" does not exist!' % dest)
             else:
                 # don't wrap headers, don't escape From, don't add From_ line
                 self.__deliver_maildir(Util.msg_as_string(self.msg), dest)
@@ -194,8 +188,7 @@ class Deliver:
                 # Not an mmdf file; abort here.
                 unlock_file(fp)
                 fp.close()
-                raise Errors.DeliveryError, \
-                      'Destination "%s" is not an mmdf file!' % mmdf
+                raise Errors.DeliveryError('Destination "%s" is not an mmdf file!' % mmdf)
             fp.seek(0, 2)                # seek to end
             orig_length = fp.tell()      # save original length
             fp.write('\1\1\1\1\n')
@@ -215,7 +208,7 @@ class Deliver:
             fp.close()
             # Reset atime.
             os.utime(mmdf, (status_old[stat.ST_ATIME], status_new[stat.ST_MTIME]))
-        except IOError, txt:
+        except IOError as txt:
             try:
                 if not fp.closed and not orig_length is None:
                     # If the file was opened and we know how long it was,
@@ -225,8 +218,7 @@ class Deliver:
                 fp.close()
             except:
                 pass
-            raise Errors.DeliveryError, \
-                  'Failure writing message to mmdf file "%s" (%s)' % (mmdf, txt)
+            raise Errors.DeliveryError('Failure writing message to mmdf file "%s" (%s)' % (mmdf, txt))
 
     def __deliver_mbox(self, message, mbox):
         """Reliably deliver a mail message into an mboxrd-format mbox file.
@@ -253,8 +245,7 @@ class Deliver:
                 # Not an mbox file; abort here.
                 unlock_file(fp)
                 fp.close()
-                raise Errors.DeliveryError, \
-                      'Destination "%s" is not an mbox file!' % mbox
+                raise Errors.DeliveryError('Destination "%s" is not an mbox file!' % mbox)
             fp.seek(0, 2)                # seek to end
             orig_length = fp.tell()      # save original length
             # Add a trailing newline if last line incomplete.
@@ -272,7 +263,7 @@ class Deliver:
             fp.close()
             # Reset atime.
             os.utime(mbox, (status_old[stat.ST_ATIME], status_new[stat.ST_MTIME]))
-        except IOError, txt:
+        except IOError as txt:
             try:
                 if not fp.closed and not orig_length is None:
                     # If the file was opened and we know how long it was,
@@ -282,8 +273,7 @@ class Deliver:
                 fp.close()
             except:
                 pass
-            raise Errors.DeliveryError, \
-                  'Failure writing message to mbox file "%s" (%s)' % (mbox, txt)
+            raise Errors.DeliveryError('Failure writing message to mbox file "%s" (%s)' % (mbox, txt))
 
     def __deliver_maildir(self, message, maildir):
         """Reliably deliver a mail message into a Maildir.
@@ -323,7 +313,7 @@ class Deliver:
         if not (os.path.isdir(dir_tmp) and
                 os.path.isdir(dir_cur) and
                 os.path.isdir(dir_new)):
-            raise Errors.DeliveryError, 'not a Maildir! (%s)' % maildir
+            raise Errors.DeliveryError('not a Maildir! (%s)' % maildir)
 
         now = time.time()
         pid = os.getpid()
@@ -337,7 +327,7 @@ class Deliver:
         fname_tmp = os.path.join(dir_tmp, filename_tmp)
         # File must not already exist.
         if os.path.exists(fname_tmp):
-            raise Errors.DeliveryError, fname_tmp + 'already exists!'
+            raise Errors.DeliveryError(fname_tmp + 'already exists!')
 
         # Get user & group of maildir.
         s_maildir = os.stat(maildir)
@@ -346,9 +336,9 @@ class Deliver:
 
         # Open file to write.
         try:
-            fd = os.open(fname_tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0600)
+            fd = os.open(fname_tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             fp = os.fdopen(fd, 'wb', 4096)
-            os.chmod(fname_tmp, 0600)
+            os.chmod(fname_tmp, 0o600)
             try:
                 # If root, change the message to be owned by the
                 # Maildir owner
@@ -360,10 +350,9 @@ class Deliver:
             fp.flush()
             os.fsync(fp.fileno())
             fp.close()
-        except (OSError, IOError), o:
+        except (OSError, IOError) as o:
             signal.alarm(0)
-            raise Errors.DeliveryError, \
-                  'Failure writing file %s (%s)' % (fname_tmp, o)
+            raise Errors.DeliveryError('Failure writing file %s (%s)' % (fname_tmp, o))
 
         fstatus = os.stat(fname_tmp)
         # e.g, 1043715037.V20d04I18bfb.hrothgar.la.mastaler.com
@@ -372,7 +361,7 @@ class Deliver:
         fname_new = os.path.join(dir_new, filename_new)
         # File must not already exist.
         if os.path.exists(fname_new):
-            raise Errors.DeliveryError, fname_new + 'already exists!'
+            raise Errors.DeliveryError(fname_new + 'already exists!')
 
         # Move message file from Maildir/tmp to Maildir/new
         try:
@@ -384,8 +373,8 @@ class Deliver:
                 os.unlink(fname_tmp)
             except:
                 pass
-            raise Errors.DeliveryError, 'failure renaming "%s" to "%s"' \
-                   % (fname_tmp, fname_new)
+            raise Errors.DeliveryError('failure renaming "%s" to "%s"' \
+                   % (fname_tmp, fname_new))
 
         # Delivery is done, cancel the alarm.
         signal.alarm(0)

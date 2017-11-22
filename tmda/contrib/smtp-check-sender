@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2003,2004 Jason R. Mastaler <jason@mastaler.com>
 #
@@ -103,8 +103,8 @@ server.quit()
 # RFC 2821 is quite clear in stating that all codes starting
 # with 5 are always `permanent negative completion replies.
 if str(code).startswith('5'):
-    print 'BAD sender'
+    print('BAD sender')
     sys.exit(0)
 else:
-    print 'GOOD sender'
+    print('GOOD sender')
     sys.exit(1)

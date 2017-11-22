@@ -59,7 +59,7 @@ class OriginalQueue(Queue):
 
     def _create(self):
         if not self.exists():
-            os.makedirs(Defaults.PENDING_DIR, 0700)
+            os.makedirs(Defaults.PENDING_DIR, 0o700)
 
 
     def _convert(self):

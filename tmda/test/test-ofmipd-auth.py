@@ -29,7 +29,7 @@ class AuthMixin(ServerClientMixin):
     @classmethod
     def quiet(cls, msg, *args):
         if not verbose:
-            print msg % args
+            print(msg % args)
 
     def serverAddOptions(self):
         self.addAuth()
@@ -58,7 +58,7 @@ class AuthTestMixin(object):
     def testAuthentication(self):
         try:
             self.client.signOn(self.username, self.password)
-        except StandardError, e:
+        except Exception as e:
             self.fail(str(e))
 
     def testAuthenticationFailure(self):
@@ -212,7 +212,7 @@ class RemoteAuthMissingMixin(RemoteAuthMixin):
         try:
             self.client.signOn(self.username, self.password)
             self.fail('Logging in succeeded with an invalid authenticator')
-        except StandardError, e:
+        except Exception as e:
             pass
 
 class RemoteAuthMissingImapTest(RemoteAuthMissingMixin, unittest.TestCase):
@@ -246,7 +246,7 @@ class AuthMapMixin(RemoteAuthMixin):
     def testMappingAuth(self):
         try:
             self.client.signOn(self.username, self.password)
-        except StandardError, e:
+        except Exception as e:
             self.fail(str(e))
 
 class AuthMapV4ToV4Test(AuthMapMixin, unittest.TestCase):
@@ -271,7 +271,7 @@ class AuthMapFailureTest(AuthMapMixin, unittest.TestCase):
             self.client.signOn(self.username, self.password)
             self.fail('Logging in succeeded with an invalid authenticator '
                       'mapping')
-        except StandardError, e:
+        except Exception as e:
             pass
 
 if __name__ == '__main__':

@@ -33,7 +33,7 @@ and licensed under the GNU General Public License version 2.
 
 import smtplib
 
-import Defaults
+from . import Defaults
 
 
 # Manage a connection to an SMTP server.

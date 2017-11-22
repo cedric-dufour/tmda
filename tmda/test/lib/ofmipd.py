@@ -111,7 +111,7 @@ class TestOfmipdServer(object):
         self._ssl = '--tls=%s' % option
 
     def addOptions(self, opts):
-        if isinstance(opts, basestring):
+        if isinstance(opts, str):
             opts = [opts]
 
         self._extraOpts.extend(opts)

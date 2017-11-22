@@ -29,8 +29,8 @@ import time
 import hmac
 from hashlib import sha1
 
-import Defaults
-import Util
+from . import Defaults
+from . import Util
 
 def tmda_mac(*items):
     """Create a SHA-1 HMAC based on items (which must be strings)

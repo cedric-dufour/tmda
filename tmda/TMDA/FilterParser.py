@@ -36,8 +36,8 @@ import sys
 import time
 import types
 
-import Defaults
-import Util
+from . import Defaults
+from . import Util
 
 
 # exception classes
@@ -86,7 +86,7 @@ class Macro:
         """Store the text to be substituted."""
         if not definition:
             errstr = '"%s": macro name without definition' % self.name
-            raise Error, errstr
+            raise Error(errstr)
         self.definition = definition
 
     def has_parms(self):
@@ -121,7 +121,7 @@ class Macro:
         if tmp_text.startswith('('):
             endargs_idx = tmp_text.find(')', 1)
             if endargs_idx == -1:
-                raise Error, '"%s": missing ")"' % self.name
+                raise Error('"%s": missing ")"' % self.name)
             args_text = tmp_text[1:endargs_idx].strip()
             text = tmp_text[endargs_idx+1:]
             args = [ arg.strip() for arg in args_text.split(',') ]
@@ -143,7 +143,7 @@ class Macro:
                 errstr = '"%s": ' % self.name
                 errstr += 'invalid argument: "%s" ' % parm
                 errstr += 'valid chars: _, 0-9, a-z, A-Z'
-                raise Error, errstr
+                raise Error(errstr)
             self.parms.append(parm)
         return macro_line
 
@@ -155,7 +155,7 @@ class Macro:
             errstr = '"%s": ' % self.name
             errstr += 'expected %d arguments, got %d' % (len(self.parms),
                                                          len(args))
-            raise Error, errstr
+            raise Error(errstr)
         low_parms = [ parm.lower() for parm in self.parms ]
         parm2arg = {}
         for i in range(len(low_parms)):
@@ -376,7 +376,7 @@ class FilterParser:
                 break
             except ParsingError:
                 raise
-            except Error, e:
+            except Error as e:
                 # A non-fatal parsing error occurred.  Set up the
                 # exception but keep going. The exception will be
                 # raised at the end of the file and will contain a
@@ -425,7 +425,7 @@ class FilterParser:
                     # line begins with whitespace, meaning a rule continuation,
                     # but we're not in the middle of a rule.
                     file.rule_lineno = file.lineno
-                    raise Error, 'line is improperly indented'
+                    raise Error('line is improperly indented')
             # line without leading whitespace signifies beginning of new rule
             #  (and maybe the end of the current rule)
             else:
@@ -444,10 +444,10 @@ class FilterParser:
         if 'macro' == rule_line[:5].lower():
             macro_line = rule_line[5:]
             if not macro_line:
-                raise Error, 'incomplete macro definition'
+                raise Error('incomplete macro definition')
             if macro_line[0] != ' ':
                 errstr = '"%s": unrecognized filter rule' % rule_line.split()[0]
-                raise Error, errstr
+                raise Error(errstr)
             macro_line = macro_line.lstrip()
             mo = Macro.macro_words.match(macro_line)
             if mo:
@@ -455,7 +455,7 @@ class FilterParser:
                 macro_line = macro_line[mo.end():].lstrip()
                 macro.set_definition(macro.parseparms(macro_line))
             else:
-                raise Error, 'invalid macro name: valid chars: _, 0-9, a-z, A-Z'
+                raise Error('invalid macro name: valid chars: _, 0-9, a-z, A-Z')
         return macro
 
 
@@ -503,8 +503,8 @@ class FilterParser:
         if not sub:
             sub = os.environ.get(var)
         if not sub:
-            raise Error, "${%s} not found in the Defaults " \
-                         "namespace nor the environment." % var
+            raise Error("${%s} not found in the Defaults " \
+                         "namespace nor the environment." % var)
         return sub
 
 
@@ -526,10 +526,10 @@ class FilterParser:
         if 'include' == rule_line[:7].lower():
             include_line = rule_line[7:]
             if not include_line:
-                raise Error, "incomplete 'include' statement"
+                raise Error("incomplete 'include' statement")
             if include_line[0] != ' ':
                 errstr = '"%s": unrecognized filter rule' % rule_line.split()[0]
-                raise Error, errstr
+                raise Error(errstr)
             include_line = include_line.lstrip()
             if '-optional' == include_line[:9].lower():
                 optional = 1
@@ -540,7 +540,7 @@ class FilterParser:
             if os.path.exists(filename):
                 self.read(filename)
             elif not optional:
-                raise Error, '"%s": file not found' % filename
+                raise Error('"%s": file not found' % filename)
             rule_line = None
         return rule_line
 
@@ -563,7 +563,7 @@ class FilterParser:
                 match_line = match_line[mo.end():]
                 #if it's not a valid argument, raise an exception
                 if not argtuple or arg not in argtuple:
-                    raise Error, '"%s": unrecognized argument' % arg
+                    raise Error('"%s": unrecognized argument' % arg)
                 # grab the option, if there was one
                 if opt == '=':
                     mo = self.matches.match(match_line)
@@ -571,13 +571,13 @@ class FilterParser:
                         opt = mo.group(2) or mo.group(3)
                         match_line = match_line[mo.end():].lstrip()
                     else:
-                        raise Error, '"%s" followed by "=" but no option' % arg
+                        raise Error('"%s" followed by "=" but no option' % arg)
                 else:
                     match_line = match_line.lstrip()
                 args[arg] = opt
             else:
                 # whatever followed the '-' wasn't a word!
-                raise Error, 'argument contains garbage characters'
+                raise Error('argument contains garbage characters')
         return args, match_line
 
 
@@ -618,7 +618,7 @@ class FilterParser:
         if not mo:
             mo = self.hdrbody_sources.match(rule_line)
         if not mo:
-            raise Error, '"%s": unrecognized filter rule' % rule_line.split()[0]
+            raise Error('"%s": unrecognized filter rule' % rule_line.split()[0])
         else:
             source = mo.group(1)
             match_line = string.lstrip(rule_line[mo.end():])
@@ -627,7 +627,7 @@ class FilterParser:
             mo = self.matches.match(match_line)
             if not mo:
                 # missing match
-                raise Error, '"%s": missing <match> field' % source
+                raise Error('"%s": missing <match> field' % source)
             else:
                 match = mo.group(2) or mo.group(3)
                 action_line = string.lstrip(match_line[mo.end():])
@@ -650,7 +650,7 @@ class FilterParser:
                     # must not be two fields
                     errstr = '"%s": ' % source
                     errstr += 'malformed header field or missing <action>'
-                    raise Error, errstr
+                    raise Error(errstr)
                 header = string.lower(mo.group(1))
                 action = (mo.group(2) or "") + (mo.group(4) or mo.group(5))
                 if action:
@@ -662,7 +662,7 @@ class FilterParser:
                         actions[header] = (None, action)
                 else:
                     # don't know how we could get here
-                    raise Error, 'unexpected error'
+                    raise Error('unexpected error')
                 action_line = string.lstrip(action_line[mo.end()+1:])
         else:
             mo = self.in_action.match(action_line)
@@ -671,7 +671,7 @@ class FilterParser:
                     actions = { 'incoming' : splitaction(action_line) }
                 else:
                     # invalid incoming action (extra stuff on line)
-                    raise Error, '"%s": garbage at end of line' % source
+                    raise Error('"%s": garbage at end of line' % source)
             else:
                 mo = self.out_action.match(action_line)
                 if mo:
@@ -679,11 +679,11 @@ class FilterParser:
                         actions = { 'from' : splitaction(action_line) }
                     else:
                         # invalid outgoing action (extra stuff on line)
-                        raise Error, '"%s": garbage at end of line' % source
+                        raise Error('"%s": garbage at end of line' % source)
                 else:
                     # missing action!
                     errstr = '"%s": missing or bogus <action> field' % source
-                    raise Error, errstr
+                    raise Error(errstr)
         return actions
 
 
@@ -695,9 +695,8 @@ class FilterParser:
         # lines from the file with the first field in each line
         # lowercased.
         addrlist = [' '.join(
-            apply(lambda f1, f2=None: f2 and [f1.lower(), f2]
-                                          or [f1.lower()],
-                  line.split(None, 1))) for line in addrlist]
+            (lambda f1, f2=None: f2 and [f1.lower(), f2]
+                                          or [f1.lower()])(*line.split(None, 1))) for line in addrlist]
         found_match = Util.findmatch(addrlist, keys)
         if found_match:
             # The second column of the line may contain an
@@ -728,7 +727,7 @@ class FilterParser:
         cdb = cdb.init(pathname)
         found_match = 0
         for key in keys:
-            if key and cdb.has_key(string.lower(key)):
+            if key and string.lower(key) in cdb:
                 found_match = 1
                 cdb_value = cdb[string.lower(key)]
                 # If there is an entry for this key,
@@ -745,11 +744,11 @@ class FilterParser:
         """
         Search a DBM-style database.
         """
-        import anydbm
-        dbm = anydbm.open(pathname, 'r')
+        import dbm
+        dbm = dbm.open(pathname, 'r')
         found_match = 0
         for key in keys:
-            if key and dbm.has_key(string.lower(key)):
+            if key and string.lower(key) in dbm:
                 found_match = 1
                 dbm_value = dbm[string.lower(key)]
                 # If there is an entry for this key,
@@ -789,7 +788,7 @@ class FilterParser:
                     if os.path.exists(surrogate):
                         os.utime(surrogate, None)
                     else:
-                        os.close(os.open(surrogate, os.O_CREAT, 0600))
+                        os.close(os.open(surrogate, os.O_CREAT, 0o600))
                 else:
                     dbname = basename
                     search_func = self.__search_file
@@ -806,7 +805,7 @@ class FilterParser:
                 domains[k.split('@', 1)[1]] = None
             except IndexError:
                 pass
-        return domains.keys()
+        return list(domains.keys())
 
 
     def __create_sql_criteria(self, dbkeys, addresscolumn):
@@ -834,7 +833,7 @@ class FilterParser:
         """Search SQL DB (Python DB API 2.0)."""
         found_match = 0
         dbkeys = keys
-        if args.has_key('wildcards'):
+        if 'wildcards' in args:
             dbkeys = []
         _username = Defaults.USERNAME.lower()
         _hostname = Defaults.HOSTNAME.lower()
@@ -849,7 +848,7 @@ class FilterParser:
             rows = cursor.fetchall()
             if cursor.rowcount <= 0:
                 return 0
-            if args.has_key('wildcards'):
+            if 'wildcards' in args:
                 if len(cursor.description) > 1:
                     dblist = [' '.join([row[0], row[1] or '']) for row in rows]
                 else:
@@ -905,12 +904,12 @@ class FilterParser:
                 # If we have an 'auto*' argument, ensure that the database
                 # is up-to-date.  If the 'optional' argument is also given,
                 # don't die if the file doesn't exist.
-                optional = args.has_key('optional')
-                if args.has_key('autocdb'):
+                optional = 'optional' in args
+                if 'autocdb' in args:
                     (dbname, search_func) = self.__autobuild_db(
                         dbname, '.cdb', dbname + '.cdb',
                         Util.build_cdb, self.__search_cdb, optional)
-                elif args.has_key('autodbm'):
+                elif 'autodbm' in args:
                     (dbname, search_func) = self.__autobuild_db(
                         dbname, '.db', dbname + '.last_built',
                         Util.build_dbm, self.__search_dbm, optional)
@@ -921,20 +920,20 @@ class FilterParser:
                     if search_func:
                         found_match = search_func(dbname, keys,
                                                   actions, source)
-                except Error, e:
+                except Error as e:
                     raise MatchError(lineno, e._msg)
                 if found_match:
                     break
             # DBM-style databases.
             if source in ('from-dbm', 'to-dbm'):
-                import anydbm
+                import dbm
                 match = os.path.expanduser(match)
                 keys += self.__extract_domains(keys)
                 try:
                     found_match = self.__search_dbm(match, keys,
                                                     actions, source)
-                except anydbm.error, e:
-                    if not args.has_key('optional'):
+                except dbm.error as e:
+                    if 'optional' not in args:
                         raise MatchError(lineno, str(e))
                 if found_match:
                     break
@@ -946,8 +945,8 @@ class FilterParser:
                 try:
                     found_match = self.__search_cdb(match, keys,
                                                     actions, source)
-                except cdb.error, e:
-                    if not args.has_key('optional'):
+                except cdb.error as e:
+                    if 'optional' not in args:
                         raise MatchError(lineno, str(e))
                 if found_match:
                     break
@@ -968,7 +967,7 @@ class FilterParser:
                             found_match = 1
                             break
                 except OSError:
-                    if not args.has_key('optional'):
+                    if 'optional' not in args:
                         raise
                 if found_match:
                     break
@@ -988,11 +987,11 @@ class FilterParser:
                 config_pck = os.path.join(match, 'config.pck')
                 if os.path.exists(config_pck):
                     dbfile = config_pck
-                    import cPickle as Serializer
+                    import pickle as Serializer
                 elif os.path.exists(config_db):
                     dbfile = config_db
                     import marshal as Serializer
-                elif args.has_key('optional'):
+                elif 'optional' in args:
                     # This is the case where neither of the Mailman
                     # configuration databases exists.  If the -optional flag
                     # was specified, don't bother trying to open a non-existent
@@ -1004,8 +1003,8 @@ class FilterParser:
                     mmdb_file.close()
                     mmdb_addylist = mmdb_data[mmdb_key]
                     # Make sure mmdb_addylist is a list of e-mail addresses.
-                    if type(mmdb_addylist) is types.DictType:
-                         mmdb_addylist = mmdb_data[mmdb_key].keys()
+                    if type(mmdb_addylist) is dict:
+                         mmdb_addylist = list(mmdb_data[mmdb_key].keys())
                     for addy in keys:
                         if addy and addy.lower() in mmdb_addylist:
                             found_match = 1
@@ -1020,7 +1019,7 @@ class FilterParser:
                 selectstmt = match
                 keys += self.__extract_domains(keys)
                 addr_column = args.get('addr_column')
-                if args.has_key('wildcards'):
+                if 'wildcards' in args:
                     if addr_column:
                         raise MatchError(lineno,
                                          "-addr_column and -wildcards " +
@@ -1068,7 +1067,7 @@ class FilterParser:
                 else:
                     content = None
                 re_flags = re.MULTILINE
-                if not args.has_key('case'):
+                if 'case' not in args:
                     re_flags = re_flags | re.IGNORECASE
                 if content and re.search(match,content,re_flags):
                     found_match = 1
@@ -1078,7 +1077,7 @@ class FilterParser:
                 try:
                     match_list = Util.file_to_list(match)
                 except IOError:
-                    if not args.has_key('optional'):
+                    if 'optional' not in args:
                         raise
                 else:
                     if source == 'body-file' and msg_body:
@@ -1088,7 +1087,7 @@ class FilterParser:
                     else:
                         content = None
                     re_flags = re.MULTILINE
-                    if not args.has_key('case'):
+                    if 'case' not in args:
                         re_flags = re_flags | re.IGNORECASE
                     for line in match_list:
                         mo = self.matches.match(line)
@@ -1135,7 +1134,7 @@ def _argstr(args):
     """
     Build argument string from args dictionary
     """
-    return ' '.join([ '-' + _cookiestr(item) for item in args.items() ])
+    return ' '.join([ '-' + _cookiestr(item) for item in list(args.items()) ])
 
 
 def _actionstr(actions):
@@ -1144,7 +1143,7 @@ def _actionstr(actions):
     """
     line = ''
     if actions:
-        for header, (action, option) in actions.items():
+        for header, (action, option) in list(actions.items()):
             mo = FilterParser.in_action.match(action or '')
             if mo:
                 line = line + action

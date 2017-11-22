@@ -2,10 +2,11 @@ import unittest
 import sys
 import time
 import os
-import cStringIO as StringIO
+import io as StringIO
 from email.parser import Parser
 
 import lib.util
+import imp
 lib.util.testPrep()
 
 from TMDA import Pending
@@ -49,7 +50,7 @@ class MockMailQueue(object):
     def __init__(self):
         self._msgs = {}
 
-        for (msgid, body) in test_messages.items():
+        for (msgid, body) in list(test_messages.items()):
             self._msgs[msgid] = '\r\n'.join(body)
 
     def init(self):
@@ -59,7 +60,7 @@ class MockMailQueue(object):
         return True
 
     def fetch_ids(self):
-        return self._msgs.keys()
+        return list(self._msgs.keys())
 
     def find_message(self, msgid):
         return msgid in self._msgs
@@ -168,8 +169,8 @@ class QueueLoopTestMixin(object):
         del Defaults.DB_PENDING_DELETE_APPEND
         del Defaults.PENDING_WHITELIST_RELEASE
 
-        reload(Defaults)
-        reload(Util)
+        imp.reload(Defaults)
+        imp.reload(Util)
 
     # DERIVED CLASS OVERRIDES
     dispose = None

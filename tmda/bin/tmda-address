@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2001-2007 Jason R. Mastaler <jason@mastaler.com>
 #
@@ -93,7 +93,7 @@ parser = OptionParser(option_list=opt_list, description=opt_desc,
 (opts, args) = parser.parse_args()
 
 if opts.full_version:
-    print Version.ALL
+    print(Version.ALL)
     sys.exit()
 if opts.config_file:
     os.environ['TMDARC'] = opts.config_file
@@ -125,7 +125,7 @@ from TMDA import Address
 def main():
     try:
         tagged_address = Address.Factory(tag = tag).create(opts.address, option).address
-    except ValueError, msg:
+    except ValueError as msg:
         parser.error(msg)
 
     if not tagged_address:

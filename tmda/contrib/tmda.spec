@@ -25,13 +25,12 @@ TMDA is an open source anti-spam system and local mail delivery agent.
 
 %build
 rm -rf %{buildroot}
-#%define pypath %(if [ `type -p python2` ]; then type -p python2; else type -p python; fi)
-%define pypath /usr/bin/python2.3
+%define pypath /usr/bin/python3
 
 # fix shbang line in all executable files
 find . -type f -perm 0755 -print | while read i
 do
-  sed '1,1s|/usr/bin/env python|%pypath|g' $i > $i.tmp && mv $i.tmp $i && chmod 0755 $i
+  sed '1,1s|/usr/bin/env python.*$|%pypath|g' $i > $i.tmp && mv $i.tmp $i && chmod 0755 $i
 done
 
 %pypath ./compileall

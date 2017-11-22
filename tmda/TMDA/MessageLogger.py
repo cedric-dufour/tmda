@@ -26,7 +26,7 @@ Log statistics about incoming or outgoing messages to a file.
 
 from email.utils import parseaddr
 
-import Util
+from . import Util
 
 
 class MessageLogger:

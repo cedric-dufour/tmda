@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2001-2007 Jason R. Mastaler <jason@mastaler.com>
 #
@@ -91,15 +91,15 @@ def is_next_line_listitem(idx, section):
 
 def print_index(variables):
     column = 0
-    print '<table width="100%">\n'
+    print('<table width="100%">\n')
     for variable in variables:
         if column % 2 == 0:
-            print '<tr>'
-        print '<td><a href="#%s">%s</a></td>' % (variable.name, variable.name)
+            print('<tr>')
+        print('<td><a href="#%s">%s</a></td>' % (variable.name, variable.name))
         column += 1
         if column % 2 == 0:
-            print '</tr>'
-    print '</table>\n'
+            print('</tr>')
+    print('</table>\n')
 
 def read_section(fp):
     name = ''
@@ -201,10 +201,10 @@ def main(fp):
 
     variables.sort()
     print_index(variables)
-    print '<dl>'
+    print('<dl>')
     for variable in variables:
-        print variable.as_string()
-    print '</dl>'
+        print(variable.as_string())
+    print('</dl>')
 
 
 
@@ -214,7 +214,7 @@ def main(fp):
 
 if __name__ == "__main__":
 
-    import cStringIO
+    import io
     import getopt
     import os
     import sys
@@ -226,15 +226,15 @@ if __name__ == "__main__":
     _exitcode = 0
 
     def usage(code, msg=''):
-        print >> sys.stderr, _usage % (_progname,)
+        print(_usage % (_progname,), file=sys.stderr)
         if msg:
-            print >> sys.stderr, msg
+            print(msg, file=sys.stderr)
         sys.exit(code)
 
 
     try:
         (options, arguments) = getopt.getopt(sys.argv[1:], 'c', 'css')
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     for option, value in options:
@@ -247,7 +247,7 @@ if __name__ == "__main__":
         except IOError:
             usage(2, 'Error: can\'t open input file "%s"', (arguments[0],))
     else:
-        fp = cStringIO.StringIO(sys.stdin.read())
+        fp = io.StringIO(sys.stdin.read())
 
     _exitcode = main(fp)
 

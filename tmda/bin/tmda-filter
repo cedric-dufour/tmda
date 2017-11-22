@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2001-2007 Jason R. Mastaler <jason@mastaler.com>
 #
@@ -47,7 +47,7 @@ try:
 
     program = sys.argv[0]
     execdir = os.path.dirname(os.path.abspath(program))
-    execfile(os.path.join(execdir, 'tmda-rfilter'))
+    exec(compile(open(os.path.join(execdir, 'tmda-rfilter')).read(), os.path.join(execdir, 'tmda-rfilter'), 'exec'))
 
 except KeyboardInterrupt:
     pass
@@ -63,8 +63,8 @@ except:
 
         from TMDA.Defaults import LOGFILE_DEBUG
         if not LOGFILE_DEBUG:
-            raise NameError, 'LOGFILE_DEBUG is not defined'
-        print 'See', LOGFILE_DEBUG, 'for traceback'
+            raise NameError('LOGFILE_DEBUG is not defined')
+        print('See', LOGFILE_DEBUG, 'for traceback')
         fp = open(LOGFILE_DEBUG, 'a')
 
     except SystemExit:
@@ -73,7 +73,7 @@ except:
     except:
         try:
             failure_file = os.path.expanduser('~/TMDA_DELIVERY_FAILURE')
-            print 'See', failure_file, 'for traceback'
+            print('See', failure_file, 'for traceback')
             tb2 = sys.exc_info()
             fp = open(failure_file, 'a')
 
