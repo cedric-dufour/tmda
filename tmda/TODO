@@ -1,0 +1,14 @@
+Todo list / Roadmap
+===================
+
+Python 3.x support (finalization):
+ - verify CDB (DJB's Constant Database) support
+ - verify EZMLM "database" support
+ - verify Mailman "database" support
+ - verify MMDF delivery support
+ - verify MBOX delivery support
+ - verify database (DB_*_APPEND) support
+
+New features:
+ - crypto key rollover
+
