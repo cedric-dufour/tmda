@@ -5,6 +5,43 @@ file in this directory as well.
 
 ======================================================================
 
+TMDA 1.3.x "Ph3nix (Python 3 reborn)" --
+
+* TMDA now relies on Python 3
+  LDAP support is now based on PyLDAP
+   (https://github.com/pyldap/pyldap).
+  PAM support is now based on python-pam
+   (https://pypi.python.org/pypi/python-pam)
+
+* Message content handling now relies entirely on (undecoded) bytes
+  strings and binary files. This hopefully will solve all charset
+  (Content-Type) and encoding (Content-Transfer-Encoding) issues.
+
+* WARNING: bounce templates MUST now use a single charset, globally
+  set (for the entire template) with the 'X-TMDA-Template-Charset'
+  header (or defaulting to Python default encoding; UTF-8 as per
+  PEP-3120). Charset-suffixed headers (<header>.<charset>: ...) are
+  NO LONGER supported. Old templates MUST be corrected accordingly.
+
+* SECURITY: user-originated scripts (or arguments) are no longer
+  executed through the system shell to prevent potential commands
+  injection. Consequently, such scripts may NO LONGER be specified
+  with arguments (other than those passed by TMDA itself).
+
+* NEW: tmda-ofmipd now allows to specifiy Diffie-Hellman parameters
+  file with the '--ssl-dh' option (which allows to use all DH-based
+  ciphers and achieve forward secrecy). It also possible to disable
+  SSLv2 and SSLv3 protocols altogether, thanks to the '--ssl-no-v2'
+  and '--ssl-no-v3' options.
+
+* NEW: BATV (Bounce Address Tag Validation) and SRS (Sender Rewriting
+  Scheme) sender (envelope) addresses are now properly unmangled.
+
+* RIP: tmda-cgi (web interface) is no longer available.
+  (if someone is willing to port it to Python 3, PR welcome)
+
+=======================================================================
+
 TMDA 1.1.12 "Macallan" --
 
 * tmda-ofmipd now has native STARTTLS and SSL support courtesy of
