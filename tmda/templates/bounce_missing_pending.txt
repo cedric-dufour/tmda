@@ -1,6 +1,6 @@
-From.US-ASCII: "%(FULLNAME)s" <%(recipient_address)s>
-Subject.US-ASCII: Mail delivery failed: returning message to sender
-BodyCharset: US-ASCII
+X-TMDA-Template-Charset: US-ASCII
+From: "%(FULLNAME)s" <%(recipient_address)s>
+Subject: Mail delivery failed: returning message to sender
 
 This message was created automatically by mail delivery software (TMDA).
 

@@ -54,11 +54,11 @@ class Connection:
             self.__conn.login(Defaults.SMTPAUTH_USERNAME,
                               Defaults.SMTPAUTH_PASSWORD)
 
-    def sendmail(self, envsender, recips, msgtext):
+    def sendmail(self, envsender, recips, msg_bytes):
         if self.__conn is None:
             self.__connect()
         try:
-            results = self.__conn.sendmail(envsender, recips, msgtext)
+            results = self.__conn.sendmail(envsender, recips, msg_bytes)
         except smtplib.SMTPException:
             # For safety, close this connection.  The next send
             # attempt will automatically re-open it.  Pass the

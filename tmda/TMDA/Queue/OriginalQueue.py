@@ -87,7 +87,7 @@ class OriginalQueue(Queue):
             fpath = os.path.join(Defaults.PENDING_DIR, msg)
             if Defaults.PENDING_DELETE_APPEND:
                 try:
-                    msgobj = Util.msg_from_file(open(fpath, 'r'))
+                    msgobj = Util.msg_from_binfile(open(fpath, 'rb'))
                 except IOError:
                     # in case of concurrent cleanups
                     pass
@@ -118,15 +118,15 @@ class OriginalQueue(Queue):
         del msg['X-TMDA-Recipient']
         msg['X-TMDA-Recipient'] = recipient
         # Write ~/.tmda/pending/MAILID.msg
-        fcontents = Util.msg_as_string(msg)
+        fcontents = Util.msg_as_bytes(msg)
         fpath = os.path.join(Defaults.PENDING_DIR, fname)
-        Util.writefile(fcontents, fpath)
+        Util.write_to_binfile(fcontents, fpath)
         del msg['X-TMDA-Recipient']
 
 
     def fetch_message(self, mailid, fullParse=False):
         fpath = os.path.join(Defaults.PENDING_DIR, mailid + '.msg')
-        msg = Util.msg_from_file(open(fpath, 'r'),fullParse=fullParse)
+        msg = Util.msg_from_binfile(open(fpath, 'rb'),fullParse=fullParse)
         return msg
 
 

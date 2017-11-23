@@ -109,10 +109,10 @@ if opts.filter_match:
     Util.filter_match(Defaults.FILTER_OUTGOING, recip, sender)
     sys.exit()
 
-msgout = Util.msg_from_file(sys.stdin)
-orig_msgout_as_string = Util.msg_as_string(msgout)
-orig_msgout_size = len(orig_msgout_as_string)
-orig_msgout_body_as_raw_string = Util.body_as_raw_string(msgout)
+msgout = Util.msg_from_binfile(sys.stdin.buffer)
+orig_msgout_as_bytes = Util.msg_as_bytes(msgout)
+orig_msgout_size = len(orig_msgout_as_bytes)
+orig_msgout_body_as_bytes = Util.body_as_bytes(msgout)
 
 def message_format(fsa, ffn, type):
     # "angles" is the default MESSAGE_FROM_STYLE
@@ -197,7 +197,7 @@ def inject_message(resending,
                    from_address,
                    full_name,
                    msg,
-                   orig_msgout_body_as_raw_string,
+                   orig_msgout_body_as_bytes,
                    actions,
                    log_msg):
     """Hand the message off to sendmail."""
@@ -243,7 +243,7 @@ def inject_message(resending,
         hdrlist = []
         for hdr in Defaults.FINGERPRINT:
             if hdr == 'body':
-                hdrval = orig_msgout_body_as_raw_string
+                hdrval = orig_msgout_body_as_bytes
             else:
                 hdrval = msg.get(hdr)
             if hdrval:
@@ -279,7 +279,7 @@ def inject_message(resending,
                                              action_msg = log_msg)
         logger.write()
     # Inject the message.
-    Util.sendmail(Util.msg_as_string(msg, 78), to_address, envelope_sender)
+    Util.sendmail(Util.msg_as_bytes(msg, 78), to_address, envelope_sender)
     # Remove any custom headers we added for this recipient from the
     # message object, else all subsequent recipients will receive them
     # unconditionally.
@@ -443,7 +443,7 @@ def main():
                        from_address,
                        fullname,
                        msgout,
-                       orig_msgout_body_as_raw_string,
+                       orig_msgout_body_as_bytes,
                        actions,
                        log_msg)
     if opts.qfilter:

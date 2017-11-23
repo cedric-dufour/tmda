@@ -482,7 +482,7 @@ class Message:
 
     def show(self):
         """Return the string representation of a message."""
-        return Util.msg_as_string(self.msgobj)
+        return Util.msg_as_bytes(self.msgobj).decode(errors='replace')
 
     def getDate(self):
         timestamp = self.msgid.split('.')[0]

@@ -170,7 +170,7 @@ from TMDA import MTA
 from TMDA import Util
 from TMDA.Queue.Queue import Queue
 
-from io import StringIO
+from io import TextIOWrapper
 from email.utils import parseaddr, getaddresses
 import email
 import fileinput
@@ -199,29 +199,23 @@ Q = Q.init()
 # We use this MTA instance to control the fate of the message.
 mta = MTA.init(Defaults.MAIL_TRANSFER_AGENT, Defaults.DELIVERY)
 
-# Read sys.stdin into a temporary variable for later access.
-stdin = StringIO(sys.stdin.read())
-
 # The incoming message as an email.Message object.
-msgin = Util.msg_from_file(stdin)
+msgin = Util.msg_from_binfile(sys.stdin.buffer)
 
-# Original message contents as a string.
-orig_msgin_as_string = Util.msg_as_string(msgin)
-
-# Original message headers as a string.
-orig_msgin_headers_as_string = Util.headers_as_string(msgin)
+# Original message contents as a bytes string.
+orig_msgin_as_bytes = Util.msg_as_bytes(msgin)
 
 # Original message headers as a raw string.
-orig_msgin_headers_as_raw_string = Util.headers_as_raw_string(msgin)
+orig_msgin_headers_as_bytes = Util.headers_as_bytes(msgin)
 
 # Original message body.
 orig_msgin_body = msgin.get_payload()
 
 # Original message body as a raw string.
-orig_msgin_body_as_raw_string = Util.body_as_raw_string(msgin)
+orig_msgin_body_as_bytes = Util.body_as_bytes(msgin)
 
 # Calculate the incoming message size.
-orig_msgin_size = len(orig_msgin_as_string)
+orig_msgin_size = len(orig_msgin_as_bytes)
 
 # Collect the three essential environment variables, and defer if they
 # are missing.
@@ -443,7 +437,7 @@ def send_bounce(bounce_message, type):
 
 def send_cc(address):
     """Send a 'carbon copy' of the message to address."""
-    Util.sendmail(Util.msg_as_string(msgin), address, envelope_sender)
+    Util.sendmail(Util.msg_as_bytes(msgin), address, envelope_sender)
     logit('CC', address)
 
 
@@ -487,7 +481,7 @@ def release_pending(timestamp, pid, msg):
     del msg['X-TMDA-Confirmed']
     msg['X-TMDA-Confirmed'] = Util.make_date()
     # Reinject the message to the original envelope recipient.
-    Util.sendmail(Util.msg_as_string(msg), recipient, return_path)
+    Util.sendmail(Util.msg_as_bytes(msg), recipient, return_path)
     mta.stop()
 
 
@@ -688,10 +682,10 @@ def bouncegen(mode, template=None):
     confirm_append_address = Util.confirm_append_address(x_primary_address,
                                                          envelope_sender)
     subject = globals().get('subject')
-    original_message_body = globals().get('orig_msgin_body_as_raw_string')
-    original_message_headers = globals().get('orig_msgin_headers_as_raw_string')
+    original_message_body = globals().get('orig_msgin_body_bytes')
+    original_message_headers = globals().get('orig_msgin_headers_as_bytes')
     original_message_size = globals().get('orig_msgin_size')
-    original_message = globals().get('orig_msgin_as_string')
+    original_message = globals().get('orig_msgin_as_bytes')
     pending_lifetime = Util.format_timeout(Defaults.PENDING_LIFETIME)
     # Optional 'dated' address variables.
     if Defaults.DATED_TEMPLATE_VARS:
@@ -809,8 +803,8 @@ def main():
     infilter.read(Defaults.FILTER_INCOMING)
     (actions, matching_line) = infilter.firstmatch(recipient_address,
                                                    sender_list,
-                                                   orig_msgin_body_as_raw_string,
-                                                   orig_msgin_headers_as_raw_string,
+                                                   orig_msgin_body_as_bytes,
+                                                   orig_msgin_headers_as_bytes,
                                                    orig_msgin_size)
     (action, option) = actions.get('incoming', (None, None))
     # Dispose of the message now if there was a filter file match.

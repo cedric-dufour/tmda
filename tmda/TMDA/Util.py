@@ -22,7 +22,7 @@
 """General purpose functions."""
 
 
-from io import StringIO
+from io import BytesIO
 import pickle
 import email
 import email.utils
@@ -413,14 +413,14 @@ def runcmd_checked(cmd, input_mixed=None, stdout=None, stderr=None):
     return (stdoutdata, stderrdata)
 
 
-def writefile(contents, fullpathname):
-    """Simple function to write contents to a file."""
+def write_to_binfile(contents, fullpathname):
+    """Simple function to write binary contents to a file."""
     if os.path.exists(fullpathname):
         raise IOError(fullpathname + ' already exists')
     else:
-        file = open(fullpathname, 'w')
-        file.write(contents)
-        file.close()
+        fp = open(fullpathname, 'wb')
+        fp.write(contents)
+        fp.close()
 
 
 def append_to_file(str_v, fullpathname):
@@ -527,27 +527,22 @@ def confirm_append_address(xp, rp):
     return rp
 
 
-def msg_from_file(fp, fullParse=False):
-    """Read a file and parse its contents into a Message object model.
+def msg_from_binfile(fp, fullParse=False):
+    """Read a binary file and parse its contents into a Message object model.
     Replacement for email.message_from_file().
 
-    We use the HeaderParser subclass instead of Parser to avoid trying
-    to parse the message body, instead setting the payload to the raw
-    body as a string.  This is faster, and also helps us avoid
-    problems trying to parse spam with broken MIME bodies."""
+    We use the BytesParser subclass and its parse() method - instead of
+    email.message_from_bytes() - to avoid parsing the entire message (body)
+    when it is not necessary."""
     from email.message import Message
-    if fullParse:
-        from email.parser import Parser
-        msg = Parser(Message).parse(fp)
-    else:
-        from email.parser import HeaderParser
-        msg = HeaderParser(Message).parse(fp)
-    #msg.header_parsed = True
+    from email.parser import BytesParser
+    headersonly = not fullParse
+    msg = BytesParser(Message).parse(fp, headersonly=headersonly)
     return msg
 
 
-def msg_as_string(msg, maxheaderlen=False, mangle_from_=False, unixfrom=False):
-    """A more flexible replacement for Message.as_string().  The default
+def msg_as_bytes(msg, maxheaderlen=False, mangle_from_=False, unixfrom=False):
+    """A more flexible replacement for Message.as_bytes().  The default
     is a textual representation of the message where the headers are
     not wrapped, From is not escaped, and a leading From_ line is not
     added.
@@ -563,23 +558,18 @@ def msg_as_string(msg, maxheaderlen=False, mangle_from_=False, unixfrom=False):
 
     unixfrom forces the printing of the envelope header delimiter.
     Default is False."""
-    from email import generator
-    fp = StringIO()
-    #if hasattr(msg, 'header_parsed') and msg.header_parsed:
-    #    genclass = Generator.HeaderParsedGenerator
-    #else:
-         #genclass = Generator.Generator
-    genclass = generator.Generator
-    g = genclass(fp, mangle_from_=mangle_from_, maxheaderlen=maxheaderlen)
+    from email.generator import BytesGenerator
+    fp = BytesIO()
+    g = BytesGenerator(fp, mangle_from_=mangle_from_, maxheaderlen=maxheaderlen)
     g.flatten(msg, unixfrom=unixfrom)
     return fp.getvalue()
 
 
-def sendmail(msgstr, envrecip, envsender):
+def sendmail(msg_bytes, envrecip, envsender):
     """Send e-mail via direct SMTP, or by opening a pipe to the
     sendmail program.
 
-    msgstr is an rfc2822 message as a string.
+    msg_bytes is an rfc2822 message as a bytes string.
 
     envrecip is the envelope recipient address.
 
@@ -613,11 +603,11 @@ def sendmail(msgstr, envrecip, envsender):
         # these arguments exactly, with no trip through any shell.
         cmd = (Defaults.SENDMAIL_PROGRAM, '-i',
                '-f', envsender, '--', envrecip)
-        runcmd_checked(cmd, msgstr)
+        runcmd_checked(cmd, msg_bytes)
     elif Defaults.MAIL_TRANSPORT == 'smtp':
         from . import SMTP
         server = SMTP.Connection()
-        server.sendmail(envsender, envrecip, msgstr)
+        server.sendmail(envsender, envrecip, msg_bytes)
         server.quit()
     else:
         raise Errors.ConfigError("Invalid MAIL_TRANSPORT method: " + Defaults.MAIL_TRANSPORT)
@@ -649,36 +639,27 @@ def decode_header(str_v):
         return str_v
 
 
-def headers_as_list(msg):
-    """Return a list containing the entire set of header lines, in the
-    order in which they were read."""
-    return ['%s: %s' % (k, v) for k, v in list(msg.items())]
+def headers_as_bytes(msg):
+    """Return the headers as a bytes string."""
+    msg_bytesIO = BytesIO(msg_as_bytes(msg))
+    hdr_bytesIO = BytesIO()
+    for line in msg_bytesIO.readlines():
+        if line == b'\n':
+            break
+        hdr_bytesIO.write(line)
+    return hdr_bytesIO.getvalue()
 
 
-def headers_as_raw_string(msg):
-    """Return the headers as a raw (undecoded) string."""
-    msgtext = msg_as_string(msg)
-    idx = msgtext.index('\n\n')
-    return msgtext[:idx+1]
-
-
-def headers_as_string(msg):
-    """Return the (decoded) message headers as a string.  If the
-    sequence can't be decoded, punt and return a raw (undecoded)
-    string instead."""
-    try:
-        hdrstr = '\n'.join(['%s: %s' %
-                            (k, decode_header(v)) for k, v in list(msg.items())])
-    except email.errors.HeaderParseError:
-        hdrstr = headers_as_raw_string(msg)
-    return hdrstr
-
-
-def body_as_raw_string(msg):
-    """Return the body as a raw (undecoded) string."""
-    msgtext = msg_as_string(msg)
-    idx = msgtext.index('\n\n')
-    return msgtext[idx+2:]
+def body_as_bytes(msg):
+    """Return the body as a bytes string."""
+    msg_bytesIO = BytesIO(msg_as_bytes(msg))
+    bod_bytesIO = BytesIO()
+    for line in msg_bytesIO.readlines():
+        if line == b'\n':
+            break
+    for line in msg_bytesIO.readlines():
+        bod_bytesIO.write(line)
+    return bod_bytesIO.getvalue()
 
 
 
@@ -886,7 +867,10 @@ def maketext(templatefile, vardict):
     specialize templates at the desired level, or, if you use only the
     default templates, you don't need to change anything.
 
-    Once the templatefile is found, string substitution is performed
+    The template charset can be specified with the 'X-TMDA-Template-Charset'
+    header and defaults to the *system* (Python) default encoding.
+
+    Once the templatefile is loaded, string substitution is performed
     by interpolation in `localdict'.
 
     Based on code from Mailman
@@ -949,11 +933,29 @@ def maketext(templatefile, vardict):
     if foundit is None:
         raise IOError("Can't find " + templatefile)
     else:
-        fp = open(foundit, 'r')
-        template = fp.read()
+        fp = open(foundit, 'rb')
+        charset = sys.getdefaultencoding()
+        for line in fp.readlines():
+            line = line.decode('ascii', errors='ignore').strip()
+            if not line:
+                break
+            line_keyval = line.split(':')
+            if len(line_keyval)<2 or line_keyval[0].strip().lower() != 'x-tmda-template-charset':
+                continue
+            charset = line_keyval[1].strip().lower()
+            break
+        fp.seek(0)
+        template = fp.read().decode(charset, errors='replace')
         fp.close()
         localdict = Defaults.__dict__.copy()
         localdict.update(vardict)
+        for k, v in localdict.items():
+            if isinstance(v, bytes):
+                localdict[k] = v.decode(errors='replace')
+            elif isinstance(v, str):
+                localdict[k] = decode_header(v)
+            else:
+                localdict[k] = str(v)
         text = template % localdict
         return text
 

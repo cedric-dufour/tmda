@@ -22,7 +22,7 @@
 """Manage a TMDA-style Auto Response."""
 
 
-from email import message_from_string
+from email import message_from_bytes, message_from_string
 from email.charset import add_alias
 from email.errors import MessageError
 from email.header import Header, decode_header
@@ -38,8 +38,6 @@ from . import Defaults
 from . import Util
 from . import Version
 
-
-DEFAULT_CHARSET = 'US-ASCII'
 
 # Extend Charset.ALIASES with some charsets which don't already have
 # convenient aliases.
@@ -71,22 +69,23 @@ class AutoResponse:
         recipient is the recipient e-mail address of this auto
         response.  Normally the envelope sender address.
         """
-        self.msgin_as_string = Util.msg_as_string(msgin)
+        self.msgin_as_bytes = Util.msg_as_bytes(msgin)
+        self.msgin_headers_as_bytes = Util.headers_as_bytes(msgin)
         # Only do this step if the user wants to include the entire message.
         if Defaults.AUTORESPONSE_INCLUDE_SENDER_COPY > 1:
             max_msg_size = int(Defaults.CONFIRM_MAX_MESSAGE_SIZE)
             # Don't include the payload if it's over a certain size.
-            if max_msg_size and max_msg_size < len(self.msgin_as_string):
+            if max_msg_size and max_msg_size < len(self.msgin_as_bytes):
                 msgin.set_payload('[ Message body suppressed '
                                   '(exceeded %s bytes) ]' % max_msg_size)
-                self.msgin_as_string = Util.msg_as_string(msgin)
+                self.msgin_as_bytes = Util.msg_as_bytes(msgin)
             # Now try to re-parse the message with a full parse (not a
             # header-only parse) and store that as self.msgin.  If the full
             # parse fails, there is no choice but to use the header-parsed
             # version, so to prevent later Generator failures, we reset
             # AUTORESPONSE_INCLUDE_SENDER_COPY to include only the headers.
             try:
-                self.msgin = message_from_string(self.msgin_as_string)
+                self.msgin = message_from_bytes(self.msgin_as_bytes)
             except (KeyError, MessageError, TypeError, ValueError):
                 self.msgin = msgin
                 Defaults.AUTORESPONSE_INCLUDE_SENDER_COPY = 1
@@ -95,9 +94,6 @@ class AutoResponse:
         self.bouncemsg = message_from_string(bouncetext)
         self.responsetype = response_type
         self.recipient = recipient
-        self.bodycharset = self.bouncemsg.get('bodycharset')
-        if self.bodycharset is None:
-            self.bodycharset = DEFAULT_CHARSET
 
 
     def create(self):
@@ -115,14 +111,14 @@ class AutoResponse:
                 message/rfc822 or text/rfc822-headers (sender's message)
         """
         # Headers that users shouldn't be setting in their templates.
-        bad_headers = ['MIME-Version', 'Content-Type', 'BodyCharset',
-                       'Content-Transfer-Encoding', 'Content-Disposition',
-                       'Content-Description']
+        bad_headers = ['X-TMDA-Template-Charset',
+                       'MIME-Version',
+                       'Content-Type', 'Content-Transfer-Encoding', 'Content-Length',
+                       'Content-Disposition', 'Content-Description']
         for h in bad_headers:
             if h in self.bouncemsg:
                 del self.bouncemsg[h]
-        textpart = MIMEText(self.bouncemsg.get_payload(), 'plain',
-                            self.bodycharset)
+        textpart = MIMEText(self.bouncemsg.get_payload(), 'plain')
         bodyparts = 1 + Defaults.AUTORESPONSE_INCLUDE_SENDER_COPY
         if bodyparts == 1:
             # A single text/plain entity.
@@ -140,9 +136,7 @@ class AutoResponse:
             self.mimemsg.attach(textpart)
             if Defaults.AUTORESPONSE_INCLUDE_SENDER_COPY == 1:
                 # include the headers only as a text/rfc822-headers part.
-                rfc822part = MIMEText(
-                    self.msgin_as_string[:self.msgin_as_string.index('\n\n')+1],
-                    'rfc822-headers', self.msgin.get_charsets(DEFAULT_CHARSET)[0])
+                rfc822part = MIMEText(self.msgin_headers_as_bytes.decode('utf-8', errors='replace'), 'rfc822-headers')
                 rfc822part['Content-Description'] = 'Original Message Headers'
             elif Defaults.AUTORESPONSE_INCLUDE_SENDER_COPY == 2:
                 # include the entire message as a message/rfc822 part.
@@ -157,35 +151,23 @@ class AutoResponse:
         self.mimemsg['Content-Disposition'] = 'inline'
         # fold the template headers into the main entity.
         for k, v in list(self.bouncemsg.items()):
-            ksplit = k.split('.', 1)
-            if len(ksplit) == 1:
-                hdrcharset = DEFAULT_CHARSET
-            else:
-                # Header.CHARSET: Value
-                k = ksplit[0]
-                hdrcharset = ksplit[1]
-            # headers like `From:' which contain e-mail addresses
-            # might need the "Fullname" portion encoded, but the
-            # address portion must never be encoded.
+            # as from TMDA 1.3, template is decoded into a string (natively UTF-8, as per PEP-3120),
+            # including the template headers (which are not supposed to contain anything but ASCII characters).
+            # When those headers DO contain non-ASCII (UTF-8) characters, 'v' actually is a Header object
+            # with an 'unknown-8bit' encoding, which we must re-encode into a proper ASCII-only header.
+            if isinstance(v, Header):
+                v = str(Header(decode_header(v)[0][0], 'utf-8', header_name=k))
             if k.lower() in [s.lower() for s in Defaults.TEMPLATE_EMAIL_HEADERS]:
                 name, addr = parseaddr(v)
-                if name and hdrcharset.lower() not in ('ascii', 'us-ascii'):
-                    h = Header(name, hdrcharset, errors='replace')
-                    name = h.encode()
+                # Note: email.utils.formataddr automatically encodes non-ascii values as UTF-8
                 self.mimemsg[k] = formataddr((name, addr))
-            # headers like `Subject:' might contain an encoded string,
-            # so we need to decode that first before encoding the
-            # entire header value.
-            elif hdrcharset.lower() not in ('ascii', 'us-ascii') and \
-                     k.lower() in [s.lower() for s in Defaults.TEMPLATE_ENCODED_HEADERS]:
-                h = Header(charset=hdrcharset, header_name=k, errors='replace')
-                decoded_seq = decode_header(v)
-                for s, charset in decoded_seq:
-                    h.append(s, charset)
-                self.mimemsg[k] = h
-            else:
-                self.mimemsg[k] = Header(v, hdrcharset, header_name=k,
-                                         errors='replace')
+            elif k.lower() in [s.lower() for s in Defaults.TEMPLATE_ENCODED_HEADERS]:
+                # Note: email.header.Header() does NOT automatically encode non-ascii values
+                try:
+                    v.encode('us-ascii')
+                    self.mimemsg[k] = Header(v, 'us-ascii', header_name=k)
+                except UnicodeEncodeError:
+                    self.mimemsg[k] = Header(v, 'utf-8', header_name=k)
         # Add some new headers to the main entity.
         timesecs = time.time()
         self.mimemsg['Date'] = Util.make_date(timesecs) # required by RFC 2822
@@ -220,7 +202,7 @@ class AutoResponse:
         """
         Inject the auto response into the mail transport system.
         """
-        Util.sendmail(Util.msg_as_string(self.mimemsg, 78),
+        Util.sendmail(Util.msg_as_bytes(self.mimemsg, 78),
                       self.recipient, Defaults.BOUNCE_ENV_SENDER)
 
 

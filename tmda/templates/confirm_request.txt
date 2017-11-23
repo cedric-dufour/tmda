@@ -1,7 +1,7 @@
-From.US-ASCII: "%(FULLNAME)s" <%(recipient_address)s>
-Subject.US-ASCII: Please confirm your message
-Reply-To.US-ASCII: %(confirm_accept_address)s
-BodyCharset: US-ASCII
+X-TMDA-Template-Charset: US-ASCII
+From: "%(FULLNAME)s" <%(recipient_address)s>
+Subject: Please confirm your message
+Reply-To: %(confirm_accept_address)s
 
 This message was created automatically by mail delivery software (TMDA).
 

@@ -886,6 +886,7 @@ class FilterParser:
         """Iterate over each rule in the list looking for a match.  As
         soon as a match is found exit, returning the corresponding
         action dictionary and matching line.
+        Message body and headers must be passed as bytes strings.
         """
         line = None
         found_match = None
@@ -1056,7 +1057,7 @@ class FilterParser:
             # A match is found if the command exits with a zero exit
             # status.
             if source == 'pipe' and msg_body and msg_headers:
-                (r, out, err) = Util.runcmd(match, msg_headers + '\n' +
+                (r, out, err) = Util.runcmd(match, msg_headers + b'\n' +
                                             msg_body)
                 if r == 0:
                     found_match = 1
@@ -1076,7 +1077,7 @@ class FilterParser:
                 re_flags = re.MULTILINE
                 if 'case' not in args:
                     re_flags = re_flags | re.IGNORECASE
-                if content and re.search(match,content,re_flags):
+                if content and re.search(match.encode(),content,re_flags):
                     found_match = 1
                     break
             if source in ('body-file','headers-file'):
@@ -1100,7 +1101,7 @@ class FilterParser:
                         mo = self.matches.match(line)
                         if mo:
                             expr = mo.group(2) or mo.group(3)
-                            if content and re.search(expr,content,re_flags):
+                            if content and re.search(expr.encode(),content,re_flags):
                                 found_match = 1
                                 break
                 if found_match:

@@ -111,7 +111,7 @@ class MaildirQueue(Queue):
                     break
             if Defaults.PENDING_DELETE_APPEND:
                 try:
-                    msgobj = Util.msg_from_file(open(fpath, 'r'))
+                    msgobj = Util.msg_from_binfile(open(fpath, 'rb'))
                 except IOError:
                     # in case of concurrent cleanups
                     pass
@@ -145,7 +145,7 @@ class MaildirQueue(Queue):
         msg['X-TMDA-Recipient'] = recipient
         # Write message
         time, pid = mailid.split('.')
-        self.__deliver_maildir(Util.msg_as_string(msg), time, pid,
+        self.__deliver_maildir(Util.msg_as_bytes(msg), time, pid,
                                Defaults.PENDING_DIR)
         del msg['X-TMDA-Recipient']
 
@@ -157,7 +157,7 @@ class MaildirQueue(Queue):
                            + '1*.[0-9]*.*'))
         for m in msgs:
             if mailid in m:
-                msg = Util.msg_from_file(open(m, 'r'),fullParse=fullParse)
+                msg = Util.msg_from_binfile(open(m, 'rb'), fullParse=fullParse)
                 return msg
         else:
             # couldn't find message, defer and retry until we find it

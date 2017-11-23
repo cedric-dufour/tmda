@@ -33,6 +33,7 @@ import time
 from . import Defaults
 from . import Errors
 from . import Util
+from . import Version
 
 
 def alarm_handler(signum, frame):
@@ -119,13 +120,20 @@ class Deliver:
         Util.purge_headers(self.msg, Defaults.PURGED_HEADERS_DELIVERY)
         (type, dest) = self.get_instructions()
         if type == 'program':
+            # Add an `X-Filter-Agent' header.
+            self.msg['X-Filter-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
             # don't wrap headers, don't escape From, add From_ line
-            self.__deliver_program(Util.msg_as_string(self.msg, 0, 0, 1),
+            self.__deliver_program(Util.msg_as_bytes(self.msg, 0, 0, 1),
                                    dest)
         elif type == 'forward':
+            # Add an `X-Relay-Agent' header.
+            self.msg['X-Relay-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
             # don't wrap headers, don't escape From, don't add From_ line
-            self.__deliver_forward(Util.msg_as_string(self.msg), dest)
+            self.__deliver_forward(Util.msg_as_bytes(self.msg), dest)
         elif type == 'mmdf':
+            # Add (replace) an `X-Delivery-Agent' header.
+            del self.msg['X-Delivery-Agent']
+            self.msg['X-Delivery-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
             # Ensure destination path exists.
             if not os.path.exists(dest):
                 raise Errors.DeliveryError('Destination "%s" does not exist!' % dest)
@@ -135,9 +143,12 @@ class Deliver:
                 raise Errors.DeliveryError('Destination "%s" is a symlink!' % dest)
             else:
                 # don't wrap headers, escape From, add From_ line
-                self.__deliver_mmdf(Util.msg_as_string(self.msg, 0, 1, 1),
+                self.__deliver_mmdf(Util.msg_as_bytes(self.msg, 0, 1, 1),
                                     dest)
         elif type == 'mbox':
+            # Add (replace) an `X-Delivery-Agent' header.
+            del self.msg['X-Delivery-Agent']
+            self.msg['X-Delivery-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
             # Ensure destination path exists.
             if not os.path.exists(dest):
                 raise Errors.DeliveryError('Destination "%s" does not exist!' % dest)
@@ -147,17 +158,22 @@ class Deliver:
                 raise Errors.DeliveryError('Destination "%s" is a symlink!' % dest)
             else:
                 # don't wrap headers, escape From, add From_ line
-                self.__deliver_mbox(Util.msg_as_string(self.msg, 0, 1, 1),
+                self.__deliver_mbox(Util.msg_as_bytes(self.msg, 0, 1, 1),
                                     dest)
         elif type == 'maildir':
+            # Add (replace) an `X-Delivery-Agent' header.
+            del self.msg['X-Delivery-Agent']
+            self.msg['X-Delivery-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
             # Ensure destination path exists.
             if not os.path.exists(dest):
                 raise Errors.DeliveryError('Destination "%s" does not exist!' % dest)
             else:
                 # don't wrap headers, don't escape From, don't add From_ line
-                self.__deliver_maildir(Util.msg_as_string(self.msg), dest)
+                self.__deliver_maildir(Util.msg_as_bytes(self.msg), dest)
         elif type == 'filter':
-            sys.stdout.write(Util.msg_as_string(self.msg))
+            # Add an `X-Filter-Agent' header.
+            self.msg['X-Filter-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
+            sys.stdout.buffer.write(Util.msg_as_bytes(self.msg))
 
     def __deliver_program(self, message, program):
         """Deliver message to /bin/sh -c program."""
@@ -184,22 +200,22 @@ class Deliver:
             # with "\1\1\1\1\n" in their first line, or are 0-length files.
             fp.seek(0, 0)                # seek to start
             first_line = fp.readline()
-            if first_line != '' and first_line[:5] != '\1\1\1\1\n':
+            if first_line != '' and first_line[:5] != b'\1\1\1\1\n':
                 # Not an mmdf file; abort here.
                 unlock_file(fp)
                 fp.close()
                 raise Errors.DeliveryError('Destination "%s" is not an mmdf file!' % mmdf)
             fp.seek(0, 2)                # seek to end
             orig_length = fp.tell()      # save original length
-            fp.write('\1\1\1\1\n')
+            fp.write(b'\1\1\1\1\n')
             # Add a trailing newline if last line incomplete.
-            if message[-1] != '\n':
-                message = message + '\n'
+            if message[-1] != b'\n':
+                message = message + b'\n'
             # Write the message.
             fp.write(message)
             # Add a trailing blank line.
-            fp.write('\n')
-            fp.write('\1\1\1\1\n')
+            fp.write(b'\n')
+            fp.write(b'\1\1\1\1\n')
             fp.flush()
             os.fsync(fp.fileno())
             # Unlock and close the file.
@@ -241,7 +257,7 @@ class Deliver:
             # with "From " in their first line, or are 0-length files.
             fp.seek(0, 0)                # seek to start
             first_line = fp.readline()
-            if first_line != '' and first_line[:5] != 'From ':
+            if first_line != '' and first_line[:5] != b'From ':
                 # Not an mbox file; abort here.
                 unlock_file(fp)
                 fp.close()
@@ -249,12 +265,12 @@ class Deliver:
             fp.seek(0, 2)                # seek to end
             orig_length = fp.tell()      # save original length
             # Add a trailing newline if last line incomplete.
-            if message[-1] != '\n':
-                message = message + '\n'
+            if message[-1] != b'\n':
+                message = message + b'\n'
             # Write the message.
             fp.write(message)
             # Add a trailing blank line.
-            fp.write('\n')
+            fp.write(b'\n')
             fp.flush()
             os.fsync(fp.fileno())
             # Unlock and close the file.

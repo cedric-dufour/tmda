@@ -199,7 +199,7 @@ def main(fp):
         if variable:
             variables.append(variable)
 
-    variables.sort()
+    #variables.sort()
     print_index(variables)
     print('<dl>')
     for variable in variables:
@@ -247,7 +247,7 @@ if __name__ == "__main__":
         except IOError:
             usage(2, 'Error: can\'t open input file "%s"', (arguments[0],))
     else:
-        fp = io.StringIO(sys.stdin.read())
+        fp = io.TextIOWrapper(sys.stdin.buffer, encoding=sys.stdin.encoding, errors='ignore')
 
     _exitcode = main(fp)
 
