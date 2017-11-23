@@ -1,0 +1,6 @@
+##/bin/sh
+# source this file (ONCE! In *THIS* directory) to setup your test environment
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONPATH=$(pwd):${PYTHONPATH}
+export PATH=$(pwd)/bin:${PATH}
+
