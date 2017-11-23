@@ -1,0 +1,54 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+# Projects variables
+export VERSION := $(shell dpkg-parsechangelog | egrep '^Version:' | cut -f 2 -d ' ')
+
+# Let's keep our source tree clean
+export PYTHONDONTWRITEBYTECODE=1
+
+# Debian rules
+%:
+	dh $@ --with python3,systemd --buildsystem=pybuild
+
+override_dh_install:
+	# Set release version
+	sed -i "s|^\(\s*\)TMDA\s*=\s*'.*|\1TMDA = '$(VERSION)'|" debian/tmp/usr/lib/*/dist-packages/TMDA/Version.py
+
+	# On Debian, use /etc/tmda/config instead /etc/tmdarc
+	sed -i "s|^\(\s*\)GLOBAL_TMDARC\s*=\s*'.*|\1GLOBAL_TMDARC = '/etc/tmda/config'|" debian/tmp/usr/lib/*/dist-packages/TMDA/Defaults.py
+
+	# Generate TMDA configuration manual page
+	./tmda/contrib/parse_def --man tmda/TMDA/Defaults.py > debian/tmp/tmda-config.5
+
+	# dh_install cannot rename files; let's do it here
+	cp debian/tmda.config debian/tmp/config
+	cp debian/tmda-ofmipd.credentials debian/tmp/credentials
+
+	# Default install
+	dh_install
+
+override_dh_installdocs:
+	dh_installdocs --link-doc=tmda
+
+override_dh_clean:
+	# Delete build artefacts
+	rm -rf MANIFEST build dist
+	find tmda -name '*.pyc' -delete
+	find tmda -type d -name '__pycache__' -exec rmdir {} \;
+
+	# Default clean
+	dh_clean
+
+debian-binary:
+	dpkg-buildpackage -us -uc -b
+
+debian-source:
+	dpkg-buildpackage -I'.git*' -I'*.pyc' -I'__pycache__' -us -uc -S
+
+debian-clean:
+	dpkg-buildpackage -T clean
+

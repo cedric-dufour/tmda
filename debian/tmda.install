@@ -1,0 +1,13 @@
+debian/tmp/usr/lib/python3*
+debian/tmp/usr/bin/tmda-address usr/bin
+debian/tmp/usr/bin/tmda-check-address usr/bin
+debian/tmp/usr/bin/tmda-filter usr/bin
+debian/tmp/usr/bin/tmda-inject usr/bin
+debian/tmp/usr/bin/tmda-keygen usr/bin
+debian/tmp/usr/bin/tmda-pending usr/bin
+debian/tmp/usr/bin/tmda-rfilter usr/bin
+debian/tmp/usr/bin/tmda-sendmail usr/bin
+debian/tmp/usr/share/tmda/templates etc/tmda
+debian/tmp/usr/share/tmda/skeleton usr/share/tmda
+debian/tmp/config etc/tmda
+

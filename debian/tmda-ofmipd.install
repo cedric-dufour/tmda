@@ -1,0 +1,2 @@
+debian/tmp/usr/bin/tmda-ofmipd usr/bin
+debian/tmp/credentials etc/tmda/ofmipd

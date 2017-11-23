@@ -1,0 +1,38 @@
+# Defaults for tmda-ofmipd initscript
+# sourced by /etc/init.d/tmda-ofmipd or /lib/systemd/system/tmda-ofmipd.service
+# installed at /etc/default/tmda-ofmipd by the maintainer scripts
+
+#
+# This is a POSIX shell fragment
+#
+
+# Uncomment to prevent daemon from starting
+# WARNING: Ignored by systemd! Use 'systemctl disable tmda-ofmipd'
+#START=no
+
+# Which address/port to bind to (listen on)
+#DAEMON_BIND="--proxyport=127.0.0.1:8025"
+
+# Authentication
+# ... credentials file
+#DAEMON_AUTH="--authfile=/etc/tmda/ofmipd/crendentials"
+# Many other authentication modes are possible, and you can combine them
+# as you see fit (see tmda-ofmipd --help).
+# ... PAM (default)
+#DAEMON_AUTH="--pamauth=login"
+
+# SSL/TLS configuration
+# WARNNING: Make sure to add the daemon user to the SSL group
+#  > adduser tmdad ssl-cert
+# ... certificates
+#SSL_CERT=/etc/ssl/certs/ssl-cert-snakeoil.pem
+#SSL_KEY=/etc/ssl/private/ssl-cert-snakeoil.key
+# ... STARTTLS mode (but allowing unencrypted sessions for local connections):
+#SSL_OPTS="--tls=localoptional --ssl-cert=$SSL_CERT --ssl-key=$SSL_KEY"
+# ... SSL on connect:
+#SSL_OPTS="--ssl --ssl-cert=$SSL_CERT --ssl-key=$SSL_KEY"
+SSL_OPTS=
+
+# Additional options that are passed to the Daemon.
+# WARNING: Ignored by systemd! Override '/{lib->etc}/systemd/system/tmda-ofmipd'
+DAEMON_OPTS="$SSL_OPTS"

@@ -1,0 +1,10 @@
+tmda/contrib/collectaddys usr/share/tmda/scripts
+tmda/contrib/printcdb usr/share/tmda/scripts
+tmda/contrib/printdbm usr/share/tmda/scripts
+tmda/contrib/smtp-check-sender usr/share/tmda/scripts
+tmda/contrib/update-internaldomains usr/share/tmda/scripts
+tmda/contrib/vadduser-tmda usr/share/tmda/scripts
+tmda/contrib/vmailmgr-vdir.sh usr/share/tmda/scripts
+tmda/contrib/vpopmail-vdir.sh usr/share/tmda/scripts
+tmda/contrib/vtmdarc usr/share/tmda/scripts
+tmda/contrib/tmda.el usr/share/tmda/scripts

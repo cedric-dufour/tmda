@@ -1,0 +1,14 @@
+[Unit]
+Description=Tagged Message Delivery Agent (TMDA) SMTP proxy server
+After=network.target local-fs.target remote-fs.target
+
+[Service]
+Type=simple
+Environment="DAEMON_BIND=--proxyport=127.0.0.1:8025" "DAEMON_AUTH=--pamauth=login"
+EnvironmentFile=/etc/default/tmda-ofmipd
+User=tmdad
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+ExecStart=/usr/bin/tmda-ofmipd -f ${DAEMON_BIND} ${DAEMON_AUTH}
+
+[Install]
+WantedBy=multi-user.target

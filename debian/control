@@ -1,0 +1,56 @@
+Source: tmda
+Section: contrib/mail
+Priority: extra
+Maintainer: Cédric Dufour <cedric.dufour@ced-network.net>
+Build-Depends: python3 (>= 3.4), debhelper (>= 9), dh-python, dh-systemd
+X-Python3-Version: >= 3.4
+Standards-Version: 3.9.8
+Homepage: http://github.com/cedric-dufour/tmda-fork
+
+Package: tmda
+Architecture: all
+Depends: python3 (>= 3.4)
+Description: Tagged Message Delivery Agent (TMDA)
+ Tagged Message Delivery Agent is a spam prevention tool supporting white
+ lists, black lists, challenge-response, and tagged addresses which accept
+ mail only from authorized senders or which expire after a fixed amount of
+ time.
+ .
+ The original version of TMDA can be found at http://tmda.net/.
+
+Package: tmda-ofmipd
+Architecture: all
+Breaks: tmda-smtp
+Replaces: tmda-smtp
+Depends: tmda
+Pre-Depends: adduser
+Recommends: python3-openssl, ssl-cert
+Suggests: python3-pampy, python3-pyldap
+Description: Tagged Message Delivery Agent (TMDA) - STMP proxy server
+ Tagged Message Delivery Agent is a spam prevention tool supporting white
+ lists, black lists, challenge-response, and tagged addresses which accept
+ mail only from authorized senders or which expire after a fixed amount of
+ time.
+ .
+ This package includes tmda-ofmipd (Old-Fashioned Mail Injection Protocol
+ Daemon), as SMTP server for tagging outgoing email. This is necessary for
+ integrating TMDA with mail clients (such as Thunderbird) that do not support
+ delivery to a sendmail program.
+ .
+ The original version of TMDA can be found at http://tmda.net/.
+
+Package: tmda-contrib
+Architecture: all
+Breaks: tmda (< 1.3)
+Depends: tmda
+Description: Tagged Message Delivery Agent (TMDA) - Contributed scripts
+ Tagged Message Delivery Agent is a spam prevention tool supporting white
+ lists, black lists, challenge-response, and tagged addresses which accept
+ mail only from authorized senders or which expire after a fixed amount of
+ time.
+ .
+ This package installs 3rd-party contributed scripts (handy utilities
+ or setup helpers).
+ .
+ The original version of TMDA can be found at http://tmda.net/.
+
