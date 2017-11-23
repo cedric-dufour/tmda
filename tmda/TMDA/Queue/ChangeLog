@@ -1,3 +1,7 @@
+2017-11-23  n/a
+
+	* As of TMDA 1.3, please refer to Git log
+
 2006-10-04  Jason R. Mastaler  <jason@mastaler.com>
 
 	* MaildirQueue.py: new file.  Maildir format support.
