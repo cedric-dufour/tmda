@@ -64,7 +64,7 @@ def keygen():
     # Use the kernel's random number generator.
     if os.path.exists(opts.device):
         key = open(opts.device,'rb').read(20)
-        return binascii.hexlify(key)
+        return str(binascii.hexlify(key), 'utf-8')
     #elif sys.platform == 'win32':
         # The Windows equivalent of polling /dev/urandom is to call the Windows
         # Crypto/API function "CryptGenRandom". At present there is no wrapper
