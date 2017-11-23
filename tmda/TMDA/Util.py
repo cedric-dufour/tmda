@@ -48,7 +48,6 @@ MODE_READ = 0o4
 MODE_WRITE = 0o2
 POSIX_NAME_MAX = 255                    # maximum length of a file name
 
-
 def gethostname():
     """The host name"""
     hostname = os.environ.get('TMDAHOST') or \
@@ -473,6 +472,31 @@ def normalize_sender(sender):
     sender = sender.replace('/', ':')
     sender = sender.lower()
     return sender[:POSIX_NAME_MAX - 22]
+
+
+def unmangle_sender(sender):
+    """Return the sender address with BATV, SRS and other address-mangling
+    tags stripped off.
+    """
+    if not sender:
+        return sender
+
+    # BATV
+    # - http://mipassoc.org/batv/
+    # - https://tools.ietf.org/html/draft-levine-smtp-batv-01
+    match = re.match("^(prvs|btv1|pub3)=.*=([^=@]*@[^@]*)$", sender, re.IGNORECASE)
+    if match:
+        return match.group(2)
+
+    # SRS
+    # - http://www.openspf.org/SRS
+    # - http://www.openspf.org/svn/project/specs/drafts/draft-mengwong-sender-rewrite-01.txt
+    match = re.match("^srs[0-9]=.*=([^=@]*)=([^=@]*)@[^@]*$", sender, re.IGNORECASE)
+    if match:
+        return '%s@%s' % (match.group(2), match.group(1))
+
+    # no (detected) mangling
+    return sender
 
 
 def confirm_append_address(xp, rp):

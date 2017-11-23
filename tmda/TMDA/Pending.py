@@ -368,7 +368,7 @@ class Message:
         self.return_path = parseaddr(self.msgobj.get('return-path'))[1]
         self.x_primary_address = parseaddr(self.msgobj.get('x-primary-address'))[1]
         self.append_address = Util.confirm_append_address(
-            self.x_primary_address, self.return_path)
+            self.x_primary_address, Util.unmangle_sender(self.return_path))
 
     def release(self):
         """Release a message from the pending queue."""

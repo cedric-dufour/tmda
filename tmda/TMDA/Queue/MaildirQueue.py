@@ -116,7 +116,7 @@ class MaildirQueue(Queue):
                     # in case of concurrent cleanups
                     pass
                 else:
-                    rp = parseaddr(msgobj.get('return-path'))[1]
+                    rp = Util.unmangle_sender(parseaddr(msgobj.get('return-path'))[1])
                     Util.append_to_file(rp, Defaults.PENDING_DELETE_APPEND)
             try:
                 os.unlink(fpath)

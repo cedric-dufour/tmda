@@ -224,6 +224,8 @@ orig_msgin_size = len(orig_msgin_as_bytes)
 envelope_sender = os.environ.get('SENDER')
 if envelope_sender == None:
     raise Errors.MissingEnvironmentVariable('SENDER')
+# Unmangle the envelope sender (cf. BATV, SRS, etc.)
+unmangled_envelope_sender = Util.unmangle_sender(envelope_sender)
 # RECIPIENT is the envelope recipient address.
 # Use Defaults.RECIPIENT_HEADER instead if set.
 recipient_header = None
@@ -517,7 +519,7 @@ def verify_confirm_cookie(confirm_cookie, confirm_action):
             if Defaults.CONFIRM_APPEND or Defaults.DB_CONFIRM_APPEND:
                 confirm_append_addr = Util.confirm_append_address(
                     parseaddr(msg.get('x-primary-address'))[1],
-                    parseaddr(msg.get('return-path'))[1])
+                    Util.unmangle_sender(parseaddr(msg.get('return-path'))[1]))
                 if not confirm_append_addr:
                     raise IOError(confirmed_mailid + ' has no Return-Path header!')
                 if Defaults.CONFIRM_APPEND:
@@ -678,9 +680,10 @@ def bouncegen(mode, template=None):
     recipient_address = globals().get('recipient_address')
     recipient_local, recipient_domain = recipient_address.split('@', 1)
     envelope_sender = globals().get('envelope_sender')
+    unmangled_envelope_sender = globals().get('unmangled_envelope_sender')
     x_primary_address = globals().get('x_primary_address')
     confirm_append_address = Util.confirm_append_address(x_primary_address,
-                                                         envelope_sender)
+                                                         unmangled_envelope_sender)
     subject = globals().get('subject')
     original_message_body = globals().get('orig_msgin_body_bytes')
     original_message_headers = globals().get('orig_msgin_headers_as_bytes')
@@ -697,7 +700,7 @@ def bouncegen(mode, template=None):
     # Optional 'sender' address variables.
     if Defaults.SENDER_TEMPLATE_VARS:
         sender_recipient_address = Cookie.make_sender_address(recipient_address,
-                                                              envelope_sender)
+                                                              unmangled_envelope_sender)
     if mode == 'accept':                # confirmation acceptance notices
         # assume we are being passed a templatefile
         templatefile = template
@@ -780,10 +783,10 @@ def main():
     # The list of sender e-mail addresses comes from the envelope
     # sender, the "From:" header, the "Reply-To:" header, and possibly
     # the "X-Primary-Address" header.
-    sender_dict = { envelope_sender: None }
+    sender_dict = { unmangled_envelope_sender: None }
     confirm_append_address = Util.confirm_append_address(x_primary_address,
-                                                         envelope_sender)
-    if confirm_append_address and confirm_append_address != envelope_sender:
+                                                         unmangled_envelope_sender)
+    if confirm_append_address and confirm_append_address != unmangled_envelope_sender:
         sender_dict[confirm_append_address] = None
     from_list = getaddresses(msgin.get_all('from', []))
     replyto_list = getaddresses(msgin.get_all('reply-to', []))
@@ -850,7 +853,7 @@ def main():
     # Sender tag?
     elif (cookie_type in [s.lower() for s in Defaults.TAGS_SENDER]) \
              and cookie_value:
-        sender_address = globals().get('envelope_sender')
+        sender_address = globals().get('unmangled_envelope_sender')
         verify_sender_cookie(sender_address, cookie_value)
     # Keyword tag?
     elif (cookie_type in [s.lower() for s in Defaults.TAGS_KEYWORD]) \
