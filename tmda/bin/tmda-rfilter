@@ -41,13 +41,13 @@ def setvuserhomedir(vhomescript):
     """Set $HOME to the recipient's (virtual user) home directory."""
     host = os.environ['HOST']
     parts = os.environ['EXT'].split('-confirm-', 1)[0].split('-')
-    cmd = vhomescript + ' "%s"' + ' "%s"' % (host,)
     username = ''
     for part in parts:
         username += part
-        fpin = os.popen(cmd % (username,))
-        vuserhomedir = fpin.read().strip()
-        if fpin.close() is None:
+        cmd = (vhomescript, username, host)
+        (result, cmdout, cmderr) = Util.runcmd(cmd)
+        if not result and cmdout:
+            vuserhomedir = cmdout.strip()
             os.environ['HOME'] = vuserhomedir
             os.chdir(vuserhomedir)
             break

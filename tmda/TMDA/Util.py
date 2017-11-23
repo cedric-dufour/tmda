@@ -219,11 +219,12 @@ def getvdomainprepend(address, vdomainsfile):
 
 def getvuserhomedir(user, domain, script):
     """Return the home directory of a qmail virtual domain user."""
-    cmd = "%s %s %s" % (script, user, domain)
-    fpin = os.popen(cmd)
-    vuserhomedir = fpin.read()
-    fpin.close()
-    return vuserhomedir.strip()
+    cmd = (script, user, domain)
+    (cmdout, cmderr) = runcmd_checked(cmd)
+    if cmdout:
+        return cmdout.strip()
+    else:
+        return None
 
 
 def getuserparams(login):
@@ -377,7 +378,7 @@ def file_to_list(file):
     return list_v
 
 
-def runcmd(cmd, input_mixed=None, stdout=None, stderr=None):
+def runcmd(cmd, input_mixed=None, stdout=PIPE, stderr=PIPE):
     """Run a command, wait for it to complete, and return a tuple of
     (return value, stdout text, stderr text). input_mixed is a string
     or a bytes string to pass as input. stdout and stderr can take the
@@ -400,7 +401,7 @@ def runcmd(cmd, input_mixed=None, stdout=None, stderr=None):
     return (process.returncode, stdoutdata, stderrdata)
 
 
-def runcmd_checked(cmd, input_mixed=None, stdout=None, stderr=None):
+def runcmd_checked(cmd, input_mixed=None, stdout=PIPE, stderr=PIPE):
     """Version of runcmd that doesn't return the exit code or
     signal, but raises an exception for errors and signals.
     """
@@ -445,17 +446,15 @@ def append_to_file(str_v, fullpathname):
 def pager(str_v):
     """Display a string using a UNIX text pager such as less or more."""
     pager = os.environ.get('PAGER')
-    if pager is None:
+    if not pager:
         # try to locate less or more if $PAGER is not set
         for prog in ('less', 'more'):
-            path = os.popen('which ' + prog).read()
-            if path != '':
-                pager = path
+            (result, cmdout, cmderr) = runcmd(('which', prog))
+            if not result and cmdout:
+                pager = cmdout.strip()
                 break
-    try:
-        os.popen(pager, 'w').write(str_v)
-    except IOError:
-        return
+    if pager:
+        runcmd((pager,), str_v, stdout=None)
 
 
 def normalize_sender(sender):

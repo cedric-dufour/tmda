@@ -1044,7 +1044,7 @@ class FilterParser:
             # A match is found if the command exits with a zero exit
             # status.
             if source == 'pipe-headers' and msg_headers:
-                (r, out, err) = Util.runcmd(match, msg_headers)
+                (r, out, err) = Util.runcmd((match,), msg_headers)
 
                 if r == 0:
                     found_match = 1
@@ -1057,7 +1057,7 @@ class FilterParser:
             # A match is found if the command exits with a zero exit
             # status.
             if source == 'pipe' and msg_body and msg_headers:
-                (r, out, err) = Util.runcmd(match, msg_headers + b'\n' +
+                (r, out, err) = Util.runcmd((match,), msg_headers + b'\n' +
                                             msg_body)
                 if r == 0:
                     found_match = 1

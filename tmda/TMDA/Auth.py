@@ -384,7 +384,7 @@ class Auth(Util.Debugable):
         except Exception as err:
             self.debug( "pipefd3 failed (%s: %s).\n" % (err.__class__, err) + \
                    "Falling back to /bin/sh redirection" )
-            cmd = "/bin/sh -c 'exec %s 3<&0'" % self.__authprog
+            cmd = 'exec %s 3<&0' % self.__authprog
             (result, cmdout, cmderr) = \
                     Util.runcmd(cmd, '%s\0%s\0' % (username, password))
             authResult = not result

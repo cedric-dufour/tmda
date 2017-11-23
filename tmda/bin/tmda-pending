@@ -286,14 +286,14 @@ if opts.vhomescript:
     if message != '':
         sys.stdout.write('missing:%s\n' % message)
         sys.exit(1)
-    cmd = "%s '%s' '%s'" % ( opts.vhomescript, user, domain )
-    fpin = os.popen(cmd)
-    vuserhomedir = fpin.read().strip()
-    if fpin.close() is None:
+    cmd = (opts.vhomescript, user, domain)
+    (result, cmdout, cmderr) = Util.runcmd(cmd)
+    if not result and cmdout:
+        vuserhomedir = cmdout.strip()
         os.environ['HOME'] = vuserhomedir
         os.chdir(vuserhomedir)
     else:
-        sys.stdout.write('invocation failed: %s\n' % ( cmd, ))
+        sys.stdout.write('invocation failed: %r [%d]\n' % (cmd, result))
         sys.exit(1)
 
 from TMDA import Pending

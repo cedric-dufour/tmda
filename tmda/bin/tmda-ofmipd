@@ -244,7 +244,7 @@ class CheckpwAuthenticator(Authenticator):
         self._cmd = cmd
 
     def _plain_check(self, username, password, localip):
-        cmd = "/bin/sh -c 'exec %s 3<&0'" % self._cmd
+        cmd = 'exec %s 3<&0' % self._cmd
         try:
             Util.runcmd_checked(cmd, '%s\0%s\0' % (username, password))
             return True
@@ -736,7 +736,7 @@ class SMTPSession(asynchat.async_chat):
             overquota = False
             if opts.throttlescript:
                 (overquota, out, err) = Util.runcmd(
-                    '%s %s' % (opts.throttlescript, self.__auth_username))
+                    (opts.throttlescript, self.__auth_username))
 
             if overquota:
                 status = '450 Outgoing mail quota exceeded'
