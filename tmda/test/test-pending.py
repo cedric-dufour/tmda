@@ -3,7 +3,7 @@ import sys
 import time
 import os
 import io as StringIO
-from email.parser import Parser
+from email.parser import BytesParser
 
 import lib.util
 import imp
@@ -15,43 +15,55 @@ from TMDA import Util
 
 verbose = False
 
+# NOTE: 'From:' header omitted on purpose
 test_messages = {
     '1243439251.12345' : [
-        'X-TMDA-Recipient: testuser@nowhere.com',
-        'Return-Path: <message1@return.path.com>',
-        'Message-ID: <12345@mail.somewhere.org>',
+        'X-TMDA-Recipient: testuser@example.com',
+        'Return-Path: <return.path.1@example.com>',
+        'Message-ID: <message.id.12345@example.com>',
+        'Date: Fri, 17 Nov 2017 13:20:16 +0100',
+        'To: Test User <testuser@example.com>',
         'Subject: Test message number one!',
         '',
         'This is a test message.',
     ],
     '1303349951.12346' : [
-        'X-TMDA-Recipient: testuser@nowhere.com',
-        'Return-Path: <message2@return.path.com>',
-        'Message-ID: <12346@mail.somewhere.org>',
-        'Subject: Test message number TWO!',
+        'X-TMDA-Recipient: testuser@example.com',
+        'Return-Path: <prvs=BATV-tag=return.path.2@example.com>',
+        'Message-ID: <message.id.12346@example.com>',
+        'Date: Fri, 17 Nov 2017 13:20:16 +0100',
+        'To: =?utf-8?Q?"T=C3=A9st"_User?= <testuser@example.com>',
+        'Subject: =?utf-8?Q?Test message "num=C3=A9ro" TWO (UTF-8)!?=',
+        'Content-Type: text/plain; charset=utf-8',
+        'Content-Transfer-Encoding: 8bit',
         '',
-        'This is another test message.',
+        b'This is another (UTF-8 encoded) test message (H\xc3\xa9! H\xc3\xa9! \xc3\x87a passe ou \xc3\xa7a casse!).',
     ],
     '1303433207.12347' : [
-        'X-TMDA-Recipient: testuser-extension@nowhere.com',
-        'Return-Path: <message3@return.path.com>',
-        'Message-ID: <12347@mail.somewhere.org>',
-        'Subject: Test message number last.',
+        'X-TMDA-Recipient: testuser-extension@example.com',
+        'Return-Path: <SRS0=SRS-tag=example.com=return.path.3@example.org>',
+        'Message-ID: <message.id.12347@example.com>',
+        'Date: Fri, 17 Nov 2017 13:20:16 +0100',
+        'To: =?ISO-8859-1?Q?"T=E9st"_User?= <testuser@example.com>',
+        'Subject: =?ISO-8859-1?Q?Test message "num=E9ro" last (ISO-8859-1).?=',
+        'Content-Type: text/plain; charset=ISO-8859-1',
+        'Content-Transfer-Encoding: 8bit',
         '',
         'This is the last',
-        'test',
-        'message',
+        '(ISO-8859-1 encoded)',
+        'test message',
+        b'(H\xe9! H\xe9! \xc7a passe ou \xe7a casse!)',
     ],
 }
 
 class MockMailQueue(object):
-    parser = Parser()
+    parser = BytesParser()
 
     def __init__(self):
         self._msgs = {}
 
         for (msgid, body) in list(test_messages.items()):
-            self._msgs[msgid] = '\r\n'.join(body)
+            self._msgs[msgid] = b'\r\n'.join([line if isinstance(line, bytes) else line.encode() for line in body])
 
     def init(self):
         return self
@@ -67,7 +79,7 @@ class MockMailQueue(object):
 
     def fetch_message(self, msgid, fullParse=False):
         headers_only = not fullParse
-        return self.parser.parsestr(self._msgs[msgid], headers_only)
+        return self.parser.parsebytes(self._msgs[msgid], headers_only)
 
     def delete_message(self, msgid):
         self._msgs.pop(msgid, None)
@@ -119,10 +131,10 @@ class QueueInitTests(unittest.TestCase):
                                         '1303433207.12347'])
 
 class QueueLoopTestMixin(object):
-    expected_addrs = ['message1@return.path.com', 'message2@return.path.com',
-                      'message3@return.path.com']
-    db_params = dict(recipient='testuser@nowhere.com', username='testuser',
-                     hostname='nowhere.com')
+    expected_addrs = ['return.path.1@example.com', 'return.path.2@example.com',
+                      'return.path.3@example.com']
+    db_params = dict(recipient='testuser@example.com', username='testuser',
+                     hostname='example.com')
 
     def setUp(self):
         self.file_appends = []

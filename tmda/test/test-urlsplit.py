@@ -11,8 +11,8 @@ import TMDA.Util as Util
 class UrlSplit(unittest.TestCase):
     def testNonV6(self):
         urls = [
-            'http://foo.com/path',
-            'http://foo.com:33/path?query#fragment',
+            'http://example.com/path',
+            'http://example.com:33/path?query#fragment',
             'ftp://111.222.0.1/path',
             'ftp://111.222.0.1:99/path?query#fragment',
         ]

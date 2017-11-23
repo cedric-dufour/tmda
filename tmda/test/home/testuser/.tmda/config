@@ -3,6 +3,6 @@
 MAIL_TRANSPORT = 'sendmail'
 SENDMAIL_PROGRAM = './bin/fakemail.py'
 
-FULLNAME = 'Test User'
+FULLNAME = '"Tést" User'
 USERNAME = 'testuser'
-HOSTNAME = 'nowhere.com'
+HOSTNAME = 'example.com'

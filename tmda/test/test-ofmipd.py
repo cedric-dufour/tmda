@@ -18,7 +18,7 @@ class FileAuthServerClientMixin(ServerClientMixin):
 
 class ServerResponseTestMixin(FileAuthServerClientMixin):
     def clientBeginCommunication(self):
-        (code, lines) = self.client.exchange('EHLO test.com\r\n')
+        (code, lines) = self.client.exchange('EHLO mua.example.org\r\n')
         self.ehloCode = code
         self.ehloLines = lines
 
@@ -203,11 +203,11 @@ class AuthenticationTests(FileAuthServerClientMixin, unittest.TestCase):
 # Provides functions for sending mail
 class SendMailMixin(FileAuthServerClientMixin):
     def beginSend(self):
-        (code, lines) = self.client.exchange('MAIL FROM: testuser@nowhere.com'
+        (code, lines) = self.client.exchange('MAIL FROM: testuser@example.com'
                                              '\r\n')
         self.assertEqual(code, 250)
 
-        (code, lines) = self.client.exchange('RCPT TO: fakeuser@fake.com\r\n')
+        (code, lines) = self.client.exchange('RCPT TO: fakeuser@example.org\r\n')
         self.assertEqual(code, 250)
 
         (code, lines) = self.client.exchange('DATA \r\n')
@@ -228,11 +228,31 @@ class SendTestMixin(SendMailMixin):
         self.beginSend()
         self.sendLine('X-nothing: nothing')
         self.sendLine('')
-        self.sendLine('Shut up.')
+        self.sendLine('Test.')
+        self.finishSend()
+
+    def testSendUtf8(self):
+        self.client.signOn()
+        self.beginSend()
+        self.sendLine('X-nothing: nothing')
+        self.sendLine('Content-Type: text/plain; charset=utf-8')
+        self.sendLine('Content-Transfer-Encoding: 8bit')
+        self.sendLine('')
+        self.sendLine(b'UTF-8 Test (H\xc3\xa9! H\xc3\xa9! \xc3\x87a passe ou \xc3\xa7a casse!)')
+        self.finishSend()
+
+    def testSendIso88591(self):
+        self.client.signOn()
+        self.beginSend()
+        self.sendLine('X-nothing: nothing')
+        self.sendLine('Content-Type: text/plain; charset=iso-8859-1')
+        self.sendLine('Content-Transfer-Encoding: 8bit')
+        self.sendLine('')
+        self.sendLine(b'ISO-8859-1 Test (H\xe9! H\xe9! \xc7a passe ou \xe7a casse!)')
         self.finishSend()
 
     def testSendFailure(self):
-        (code, lines) = self.client.exchange('MAIL TO: testuser@nowhere.com'
+        (code, lines) = self.client.exchange('MAIL TO: testuser@example.com'
                                              '\r\n')
         self.assertEqual(code, 530)
 

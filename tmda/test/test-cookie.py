@@ -9,8 +9,8 @@ import TMDA.Cookie as Cookie
 class Cookies(unittest.TestCase):
     time = 1262937386
     pid = 12345
-    sender_address = 'Sender@REmote.com'
-    user_address = 'testuser@testsite.com'
+    sender_address = 'Sender@EXAMPLE.org'
+    user_address = 'testuser@example.com'
 
     keyword_cookies = [
         ('keywordtest', 'keywordtest.243548'),
@@ -39,12 +39,12 @@ class Cookies(unittest.TestCase):
         calculated = Cookie.make_confirm_address(self.user_address, self.time,
                                                  self.pid)
         self.assertEqual(calculated,
-            'testuser-confirm-1262937386.12345.a45167@testsite.com')
+            'testuser-confirm-1262937386.12345.a45167@example.com')
 
         calculated = Cookie.make_confirm_address(self.user_address, self.time,
                                                  self.pid, 'keyword')
         self.assertEqual(calculated,
-            'testuser-confirm-1262937386.12345.f5ee35@testsite.com')
+            'testuser-confirm-1262937386.12345.f5ee35@example.com')
 
     def testDatedCookie(self):
         calculated = Cookie.make_dated_cookie(self.time)
@@ -56,30 +56,30 @@ class Cookies(unittest.TestCase):
     def testDatedAddress(self):
         calculated = Cookie.make_dated_address(self.user_address, self.time)
         self.assertEqual(calculated,
-            'testuser-dated-1263369386.df2137@testsite.com')
+            'testuser-dated-1263369386.df2137@example.com')
 
         # "Now" address. Can't predict exactly how it will come out,
         # but make sure it at least succeeds.
         import re
-        pattern = re.compile(r'testuser-dated-\d{10}\.[0-9a-f]{6}@testsite\.com')
+        pattern = re.compile(r'testuser-dated-\d{10}\.[0-9a-f]{6}@example\.com')
         calculated = Cookie.make_dated_address(self.user_address)
         self.assertTrue(pattern.match(calculated))
 
     def testSenderCookie(self):
         calculated = Cookie.make_sender_cookie(self.sender_address.lower())
-        self.assertEqual(calculated, '23834d')
+        self.assertEqual(calculated, 'c7795c')
 
         calculated = Cookie.make_sender_cookie(self.sender_address)
-        self.assertEqual(calculated, '23834d')
+        self.assertEqual(calculated, 'c7795c')
 
     def testSenderAddress(self):
         calculated = Cookie.make_sender_address(self.user_address,
                                                 self.sender_address.lower())
-        self.assertEqual(calculated, 'testuser-sender-23834d@testsite.com')
+        self.assertEqual(calculated, 'testuser-sender-c7795c@example.com')
 
         calculated = Cookie.make_sender_address(self.user_address,
                                                 self.sender_address)
-        self.assertEqual(calculated, 'testuser-sender-23834d@testsite.com')
+        self.assertEqual(calculated, 'testuser-sender-c7795c@example.com')
 
     def testKeywordCookie(self):
         for (keyword, cookie) in self.keyword_cookies:
@@ -96,7 +96,7 @@ class Cookies(unittest.TestCase):
         for (keyword, cookie) in self.keyword_cookies:
             calculated = Cookie.make_keyword_address(self.user_address,
                                                      keyword)
-            expected = 'testuser-keyword-%s@testsite.com' % cookie
+            expected = 'testuser-keyword-%s@example.com' % cookie
             self.assertEqual(calculated, expected)
 
 class Fingerprints(unittest.TestCase):

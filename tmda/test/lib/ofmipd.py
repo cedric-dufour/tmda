@@ -212,12 +212,14 @@ class TestOfmipdClient(object):
         assert code == 235, 'AUTH failed, code=%d' % code
 
     def receiveUntil(self, finished):
-        data = ''
+        data = b''
         while not finished(data):
             data += self._sock.recv(200)
         return data
 
     def send(self, data):
+        if isinstance(data, str):
+            data = data.encode('utf-8')  # UTF-8 as per RFC 6531
         self._sock.send(data)
 
     def exchange(self, msg):
@@ -227,7 +229,7 @@ class TestOfmipdClient(object):
 
     # Helpers, etc.
 
-    _responseMatcher = re.compile(r'^\d{3} .*\r\n', re.MULTILINE)
+    _responseMatcher = re.compile(b'^\d{3} .*\r\n', re.MULTILINE)
     def _completeResponse(self, data):
         return self._responseMatcher.search(data) is not None
 
@@ -235,6 +237,10 @@ class TestOfmipdClient(object):
                                       re.MULTILINE)
     def _splitResponse(self, response):
         'return (code, [lines])'
+        try:
+            response = response.decode('utf-8')
+        except UnicodeDecodeError:
+            raise ValueError('SMTP response may not contain charset other than US-ASCII (RFC 5321) or UTF-8 (RFC 6531)')
         lines = []
         code = None
         for m in self._responseLineMatcher.finditer(response):

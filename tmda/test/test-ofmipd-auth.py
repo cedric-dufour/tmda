@@ -186,7 +186,11 @@ class AuthApopTest(RemoteAuthTestMixin, unittest.TestCase):
 # ldapadd -x -h localhost -D cn=admin,dc=nodomain -w password -f test.ldif
 class AuthLdapTest(RemoteAuthTestMixin, unittest.TestCase):
     protocol = 'ldap'
-    path = 'uid=%s,ou=people,dc=nodomain'
+    path = 'uid=%s,ou=users,dc=example,dc=com'
+
+class AuthLdapsTest(RemoteAuthTestMixin, unittest.TestCase):
+    protocol = 'ldaps'
+    path = 'uid=%s,ou=users,dc=example,dc=com'
 
 # Notes for the AuthImapTest and AuthProgTest apply to Chain tests.
 class AuthChainTest(RemoteAuthTestMixin, unittest.TestCase):
