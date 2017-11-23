@@ -1,3 +1,7 @@
+2017-11-21  Cédric Dufour  <cedric.dufour@ced-network.net>
+
+	* TMDA 1.3.0 (Ph3nix) is released.
+
 2007-07-30  Jason R. Mastaler  <jason@mastaler.com>
 
 	* TMDA 1.1.12 is released.
@@ -48,7 +52,7 @@
 2004-02-19  Jason R. Mastaler  <jason@mastaler.com>
 
 	* THANKS (Contributions): Add David Bremner.
-	
+
 2004-02-12  Jason R. Mastaler  <jason@mastaler.com>
 
 	* TMDA 1.1.2 is released.
@@ -60,7 +64,7 @@
 2004-01-27  Jason R. Mastaler  <jason@mastaler.com>
 
 	* THANKS (Contributions): Add Maurizio Speranza.
-	
+
 2003-12-19  Jason R. Mastaler  <jason@mastaler.com>
 
 	* TMDA 1.0 is released.
@@ -121,7 +125,7 @@
 
 	* THANKS (Contributions): Add Slawek 'IDEall' Fydryk and Jason
 	Andrade.
-	
+
 2003-08-01  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* TMDA 0.82 is released.
@@ -201,7 +205,7 @@
 2003-01-24  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* THANKS (Contributions): Add Chris Hardie & Cory Wright.
-	
+
 2003-01-07  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* TMDA 0.68 is released.
@@ -402,7 +406,7 @@
 
 	* THANKS (Contributions): Add Lou Hevly and Francisco Sam
 	Castillo.
-	
+
 2001-11-20  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* README: Removed TODO.
@@ -509,7 +513,7 @@
 2001-06-06  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* README: TMDA 0.20 is released.
-	
+
 2001-05-28  Jason R. Mastaler  <jason@mastaler.com>
 
 	* README: TMDA 0.15 is released.
@@ -536,7 +540,7 @@
 2001-05-01  Jason R. Mastaler  <jasonrm@nightshade.acl.lanl.gov>
 
 	* README: Descriptions of new files and link to mailing lists.
-	
+
 2001-04-27  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* README: TMDA 0.10 is released.
