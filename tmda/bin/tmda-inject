@@ -390,9 +390,9 @@ def main():
         or 'message-id' not in msgout):
         del msgout['Message-ID']
         msgout['Message-ID'] = Util.make_msgid()
-    # Add an `X-Delivery-Agent' header.
-    del msgout['X-Delivery-Agent']
-    msgout['X-Delivery-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
+    # Add an `X-Submission-Agent' header.
+    del msgout['X-Submission-Agent']
+    msgout['X-Submission-Agent'] = 'TMDA/%s (%s)' % (Version.TMDA, Version.CODENAME)
     # Possibly add a Mail-Followup-To field if one doesn't exist.
     if Defaults.MAIL_FOLLOWUP_TO and 'mail-followup-to' not in msgout:
         if isinstance(Defaults.MAIL_FOLLOWUP_TO, str):
