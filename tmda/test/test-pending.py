@@ -77,9 +77,8 @@ class MockMailQueue(object):
     def find_message(self, msgid):
         return msgid in self._msgs
 
-    def fetch_message(self, msgid, fullParse=False):
-        headers_only = not fullParse
-        return self.parser.parsebytes(self._msgs[msgid], headers_only)
+    def fetch_message(self, msgid):
+        return self.parser.parsebytes(self._msgs[msgid])
 
     def delete_message(self, msgid):
         self._msgs.pop(msgid, None)

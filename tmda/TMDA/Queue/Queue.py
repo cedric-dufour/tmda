@@ -89,12 +89,10 @@ class Queue:
         pass
 
 
-    def fetch_message(self, mailid, fullParse=False):
+    def fetch_message(self, mailid):
         """
         Fetch the contents of a message in the queue.  Should
         return an email.message like object.
-        Normally uses HeaderParser' for a quick parse unless 'fullParse'
-        is set to True, in which case it uses the full 'email.parser'.
         """
         pass
 

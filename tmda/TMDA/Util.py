@@ -550,17 +550,13 @@ def confirm_append_address(xp, rp):
     return rp
 
 
-def msg_from_binfile(fp, fullParse=False):
+def msg_from_binfile(fp):
     """Read a binary file and parse its contents into a Message object model.
     Replacement for email.message_from_file().
-
-    We use the BytesParser subclass and its parse() method - instead of
-    email.message_from_bytes() - to avoid parsing the entire message (body)
-    when it is not necessary."""
+    """
     from email.message import Message
     from email.parser import BytesParser
-    headersonly = not fullParse
-    msg = BytesParser(Message).parse(fp, headersonly=headersonly)
+    msg = BytesParser(Message).parse(fp, headersonly=False)
     return msg
 
 

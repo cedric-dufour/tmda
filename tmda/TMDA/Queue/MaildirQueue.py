@@ -150,14 +150,14 @@ class MaildirQueue(Queue):
         del msg['X-TMDA-Recipient']
 
 
-    def fetch_message(self, mailid, fullParse=False):
+    def fetch_message(self, mailid):
         msgs = (glob(os.path.join(Defaults.PENDING_DIR, 'new/')
                      + '1*.[0-9]*.*')) + \
                      (glob(os.path.join(Defaults.PENDING_DIR, 'cur/')
                            + '1*.[0-9]*.*'))
         for m in msgs:
             if mailid in m:
-                msg = Util.msg_from_binfile(open(m, 'rb'), fullParse=fullParse)
+                msg = Util.msg_from_binfile(open(m, 'rb'))
                 return msg
         else:
             # couldn't find message, defer and retry until we find it

@@ -124,9 +124,9 @@ class OriginalQueue(Queue):
         del msg['X-TMDA-Recipient']
 
 
-    def fetch_message(self, mailid, fullParse=False):
+    def fetch_message(self, mailid):
         fpath = os.path.join(Defaults.PENDING_DIR, mailid + '.msg')
-        msg = Util.msg_from_binfile(open(fpath, 'rb'),fullParse=fullParse)
+        msg = Util.msg_from_binfile(open(fpath, 'rb'))
         return msg
 
 

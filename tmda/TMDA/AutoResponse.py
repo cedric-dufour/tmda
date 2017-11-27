@@ -79,9 +79,8 @@ class AutoResponse:
                 msgin.set_payload('[ Message body suppressed '
                                   '(exceeded %s bytes) ]' % max_msg_size)
                 self.msgin_as_bytes = Util.msg_as_bytes(msgin)
-            # Now try to re-parse the message with a full parse (not a
-            # header-only parse) and store that as self.msgin.  If the full
-            # parse fails, there is no choice but to use the header-parsed
+            # Now try to re-parse the message and store that as self.msgin.
+            # If that fails, there is no choice but to use the original
             # version, so to prevent later Generator failures, we reset
             # AUTORESPONSE_INCLUDE_SENDER_COPY to include only the headers.
             try:
