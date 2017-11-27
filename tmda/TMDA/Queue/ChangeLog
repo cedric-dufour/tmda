@@ -5,7 +5,7 @@
 2006-10-04  Jason R. Mastaler  <jason@mastaler.com>
 
 	* MaildirQueue.py: new file.  Maildir format support.
-	
+
 2006-10-04  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Queue.py (Queue.init): Add 'maildir'.
@@ -18,5 +18,5 @@
 2006-09-22  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Util.py: new file.
-	
+
 

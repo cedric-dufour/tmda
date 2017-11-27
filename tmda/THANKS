@@ -18,7 +18,7 @@ Acknowledgements:
       in just a couple of weeks.  This could have easily been a
       multi-month project in C/C++, or a shorter project in Perl, with
       working but ugly and unmaintainable results.
-    
+
     * Andrew Archibald -- provided lots of cryptography-related help and
       insight.  Much of the crypto design in TMDA stems from his input.
 

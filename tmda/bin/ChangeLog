@@ -64,7 +64,7 @@
 2006-10-27  Mark Horn  <mark@hornclan.com>
 
 	* tmda-rfilter: added multiple expiration to ACTION_EXPIRED_DATED
-	
+
 2006-10-13  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-rfilter: Migrate from getopt to optparse.
@@ -86,26 +86,26 @@
 
 	* tmda-keygen: Migrate from getopt to optparse.
 	* tmda-check-address: Ditto.
-	
+
 2006-10-05  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-rfilter: Add -e/--environ option for setting of environment
-	variables from the command line.	
+	variables from the command line.
 
 2006-09-27  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-rfilter: Modified to use new TMDA.Queue interface.
-	
+
 2004-03-25  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-ofmipd: Add -P / --pure-proxy.
 	(VDomainProxy.process_message): Use pure_proxy.
 	(TMDAProxy.process_message): Ditto.
-	
+
 2004-03-05    <jason@mastaler.com>
 
 	* tmda-keygen (keygen): /dev/urandom or equivalent is now required.
-	
+
 2004-03-04  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-rfilter (autorespond_to_sender): Look for 'X-List'.
@@ -121,7 +121,7 @@
 
 	* tmda-rfilter (do_default_action): last parameter now takes an
 	optional template name instead of bounce text.
-	
+
 	(bouncegen): Remove text parameter.
 
 2004-02-11  Jason R. Mastaler  <jason@mastaler.com>
@@ -134,18 +134,18 @@
 2004-02-05  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-inject (inject_message): Support Defaults.MAIL_FOLLOWUP_TO.
-	
+
 2004-01-11  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-rfilter (verify_dated_cookie): Use Util.Make_date().
 
 	* tmda-ofmipd (SMTPServer.__init__): Ditto.
-	
+
 2004-01-10  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-rfilter (release_pending): Use Util.make_date() for
 	X-TMDA-Confirmed.
-	
+
 2003-11-13  Tim Legant  <tim@catseye.net>
 
 	* tmda-ofmipd (class IMAP4_SSL): This local class is only
@@ -161,7 +161,7 @@
 
 	* tmda-ofmipd (SMTPChannel.auth_notify_succeed): Add the
 	authenticated username to the environment (LOGIN).
-	
+
 2003-10-16  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-ofmipd (quote_rcpts): Remove.
@@ -170,12 +170,12 @@
 	string to Util.pipecmd() to avoid the shell.
 
 	(TMDAProxy.process_message): Ditto.
-	
+
 2003-08-19  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-rfilter (main): Support confirm=template FILTER_INCOMING
 	instructions.
-	
+
 2003-07-18  Tim Legant  <tim@catseye.net>
 
 	* tmda-rfilter (opt processing): Added '-p/--print' option to
@@ -233,15 +233,15 @@
 	which defaults to None.
 
 	(main): Support bounce=template FILTER_INCOMING instructions.
-		
+
 2003-05-30  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-rfilter (recipient_address): export TMDA_RECIPIENT to the
 	environment.
-	
+
 	* tmda-inject (main): TMDA_INJECT_RECIPIENT renamed
 	TMDA_RECIPIENT, TMDA_INJECT_VRECIPIENT renamed TMDA_VRECIPIENT.
-	
+
 2003-05-25  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-rfilter (pendingdir): Use Defaults.PENDING_DIR.
@@ -266,14 +266,14 @@
 
 	(bouncegen): Add `pending_lifetime', which is the textual
 	description of Defaults.PENDING_LIFETIME for use in the templates.
-	
+
 2003-04-27  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-inject (main): Add TMDA_INJECT_RECIPIENT and
 	TMDA_INJECT_VRECIPIENT to the environment.
 
 	(main): Read FILTER_OUTGOING once per message recipient.
-		
+
 2003-04-26  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-inject (msgout): Use Util.msg_from_file().
@@ -285,10 +285,10 @@
 
 	* tmda-ofmipd (SMTPChannel.smtp_EHLO): Use Util.make_date() for
 	Received header.
-	
+
 	* tmda-inject (inject_message): Examine Defaults.TMDAINJECT
 	when deciding whether to create Date and Message-ID fields.
-		
+
 2003-04-22  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-inject (msgout): Use Util.msg_as_string().
@@ -303,11 +303,11 @@
 
 	* tmda-rfilter (autorespond_to_sender): Check for Majordomo
 	messages.
-	
+
 2003-04-18  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-ofmipd (main): Ignore SIGHUP if not in foreground.
-	
+
 2003-03-11  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-inject (inject_message): Prepend a Received header if
@@ -336,12 +336,12 @@
 	* tmda-inject (inject_message): Bugfix. Remove all tag action
 	headers after each SMTP transmission so they aren't
 	unconditionally inherited by subsequent recipients.
-		
+
 2003-02-20  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
         * tmda-inject (msgout): Create the message object from our own
         Message module. `From' is no longer escaped.
-        
+
 2003-02-17  Jason R. Mastaler  <jason@aguirre.la.mastaler.com>
 
 	* tmda-check-address (main): Bugfix. Print the expired date for
@@ -381,7 +381,7 @@
 
 	(ipauthmap2dict): Helper function to read ipauthmap and return
 	Python dictionary.
-	
+
 	(VDomainProxy.process_message): Set 'domain' to empty string for
 	IP-based or default domains (VPopMail).
 
@@ -420,11 +420,11 @@
 
 	* tmda-pending: Add --whitelist and --blacklist command-line
 	options.
-	
+
 2002-11-21  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-ofmipd (main): Do port binding before the seteuid call.
-	
+
 2002-11-12  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-rfilter (verify_confirm_cookie): Append the address in
@@ -437,12 +437,12 @@
 
 	* tmda-pending (main): Display Defaults.SUMMARY_HEADERS during
 	interactive mode.
-	
+
 2002-11-03  Jason R. Mastaler  <jason@aguirre.la.mastaler.com>
 
 	* tmda-inject (inject_message): Add Version.CODENAME to
 	X-Delivery-Agent.
-	
+
 2002-10-29  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-pending (main): Allow messages to be specified on standard
@@ -469,11 +469,11 @@
 2002-09-30  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-inject: Use the email module instead of the rfc822 module.
-	
+
 	* tmda-pending: Ditto.
 
 	* tmda-rfilter: Ditto.
-	
+
 2002-09-20  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-pending (main): Run the headers through an RFC 2047 decoder
@@ -497,9 +497,9 @@
 
 	* tmda-*: Prepend prefix/site-packages/TMDA/pythonlib if the
 	import of paths fails in order to support package installations.
-	
+
 	* paths.py: Prepend prefix/TMDA/pythonlib to the sys.path.
-	
+
 2002-09-03  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* tmda-ofmipd (run_remoteauth): Add support for APOP
@@ -520,7 +520,7 @@
 	* tmda-rfilter (autorespond_to_sender): New function.  Determine
 	whether to auto-respond based on detection of mailing list/bounce
 	messages as well if the auto-response rate limit has been reached.
-	
+
 2002-08-08  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (logit): Move guts into TMDA/MessageLogger.
@@ -549,7 +549,7 @@
 
 	* tmda-ofmipd (authfile2dict): Strip whitespace before processing
 	each line.
-	
+
 2002-07-19  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-ofmipd (TMDAProxy.process_message): Single-quote each
@@ -559,7 +559,7 @@
 
 	(SMTPChannel.verify_login): Check for authprog before authfile.
 	(SMTPChannel.verify_plain): Ditto.
-	
+
 2002-07-12  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-ofmipd: Documentation updates.
@@ -580,7 +580,7 @@
 
 	* tmda-pending (release): Rename any existing Delivered-To lines
 	Old-Delivered-To instead of removing them.
-	
+
 	* tmda-rfilter (release_pending): Ditto.
 
 2002-06-25  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
@@ -598,7 +598,7 @@
 2002-06-20  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-ofmipd (TMDAProxy.process_message): fork() tmda-inject.
-	
+
 2002-06-16  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-pending (main): Add PENDING_WHITELIST_APPEND and
@@ -622,7 +622,7 @@
 	element in the TAGS_* lists.
 
 	* tmda-check-address: Ditto.
-	
+
 2002-06-03  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter: Bugfix.  Specify maxcount so only the first
@@ -649,7 +649,7 @@
 	(verify_dated_cookie): Log the cause of a failed dated cookie
 	verification.  Differentiate between not-expired with bad cookie,
 	expired with good cookie, and expired with bad cookie.
-	
+
 2002-05-23  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (bouncegen): dated_cookie_address and
@@ -673,7 +673,7 @@
 
 	(bouncegen): Add '(no reply)' to the Actn: line of the
 	LOGFILE_INCOMING entry to indicate that no auto-response was sent.
-	
+
 2002-05-14  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-keygen (main): Print only the unquoted key.
@@ -681,7 +681,7 @@
 2002-05-06  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (logit): Log Reply-To if it exists in the message.
-	
+
 2002-05-02  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (main): Do all deliveries via mta.deliver().
@@ -695,10 +695,10 @@
 2002-04-29  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (recipient_header): Parse the header as an address.
-	
+
 	* tmda-pending (main): Support PENDING_DELETE_APPEND and
 	PENDING_RELEASE_APPEND.
-	
+
 	* tmda-rfilter (verify_confirm_cookie): Catch messages sent
 	directly to a 'confirm-done' address.
 
@@ -723,14 +723,14 @@
 
 	* tmda-rfilter (verify_confirm_cookie): Modify DELIVERED_CACHE to
 	hold both the message filename, as well as how it was delivered
-	('released' or 'confirmed').  
+	('released' or 'confirmed').
 
 	Send a different confirm_accept.txt message depending on whether
 	the message is being confirmed for the first time, confirmed after
 	it was already manual released, or is a re-confirmation.
 
 	Raise an IOError if the message lacks a Return-Path header.
-	
+
 2002-03-27  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (release_pending): Move the CONFIRM_APPEND,
@@ -742,11 +742,11 @@
 	* tmda-rfilter (verify_confirm_cookie): Add the pending message's
 	name to Defaults.DELIVERED_CACHE upon sucessful delivery instead
 	of deleting it.  Then, consult the same cache to determine whether
-	a pending message has already been delivered or not.  
+	a pending message has already been delivered or not.
 
 	* tmda-pending (main): Skip messages which have already been
 	delivered.
-	
+
 2002-03-13  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-inject (message_format): Util.formataddr() now handles the
@@ -790,18 +790,18 @@
 	* tmda-pending (release): Ditto.
 
 	* tmda-rfilter: Ditto.
-	
+
 2002-02-22  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-pending (main): Make interactive command summary more
 	intuitive.
-	
+
 2002-02-21  Tim Legant  <tim@catseye.net>
 
 	* tmda-inject: Added <sender> parameter to -M switch.  Made
 	filter_match clause use that sender as parameter to
 	Util.filter_match.
-	
+
 	(inject_message): Changed default cookie option from
 	'from_address' to None.  'from_address' was bogus.
 
@@ -829,7 +829,7 @@
 	* tmda-inject (inject_message): If Defaults.FINGERPRINT contains
 	'body', append the message body to the list passed to
 	Cookie.make_fingerprint().
-	
+
 2002-02-13  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-*: Add -V, --version options.
@@ -848,7 +848,7 @@
 2002-02-09  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-pending: New program; a pending queue manipulation tool.
-	
+
 2002-02-07  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (bouncegen): Write an `X-TMDA-Recipient' header
@@ -860,7 +860,7 @@
 	-confirm-done address.
 
 	(inject_pending): Removed.
-	
+
 2002-02-01  Tim Legant  <tim@catseye.net>
 
 	* tmda-inject (make_field): Add special case for cookie_type of
@@ -874,7 +874,7 @@
 
 	* tmda-keygen (keygen): Use binascii.hexlify instead of
 	Util.hexlify.
-	
+
 2002-01-30  Tim Legant  <tim@catseye.net>
 
 	* paths.py: Also follow relative symlinks.
@@ -920,8 +920,8 @@
 	always produce fully qualified addresses.
 
 	(recipient_address): Only parse Defaults.VIRTUALDOMAINS if the MTA
-	is qmail.  
-	
+	is qmail.
+
 2002-01-09  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (list_headers): Add `Mailing-List' to the list of
@@ -951,7 +951,7 @@
 
 	* tmda-rfilter (logit): Remove the try/except, tmda-filter will
 	catch the uncaught exception.
-	
+
 	(send_bounce): Ditto.
 
 	(send_cc): Ditto.
@@ -964,7 +964,7 @@
 
 	In addition to StandardError derived exceptions, also catch TMDA's
 	own exceptions.
-	
+
 2002-01-03  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-rfilter (logit): Rename LOGFILE to LOGFILE_INCOMING.  Also
@@ -984,7 +984,7 @@
 
 	(execdir): Import time only right before trying to log the
 	exception so that TZ set in the tmdarc is honored.
-	
+
 2002-01-02  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-sendmail (usage): Remove the `-bs' option, since
@@ -1060,7 +1060,7 @@
 
 	* tmda-inject (inject_message): Optionally remove the headers
 	contained in Defaults.PURGED_HEADERS.
-	
+
 2001-12-10  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-inject (inject_message): Bugfix.  tmda-inject was not
@@ -1076,7 +1076,7 @@
 	(usage): Rearrange order of module imports so that TMDA.Defaults
 	is imported before time is.  This is so the user's TZ environment
 	variable setting is globally respected.
-	
+
 2001-12-07  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-inject (inject_message): Support the `unquoted'
@@ -1119,7 +1119,7 @@
 	e-mail addresses in the From: and Reply-To: headers.  Previously,
 	tmda-filter used only the first address from each header when
 	matching.
-	
+
 2001-11-26  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (main): Bugfix.  Move the check for 'confirm'
@@ -1174,7 +1174,7 @@
 	* tmda-filter (main): Consult ACTION_INCOMING to decide how to
 	dispose of messages by default rather than always requesting
 	confirmation.
-	
+
 	* tmda-inject (main): Use ACTION_OUTGOING instead of COOKIE_TYPE
 	to specify the default tagging type.
 
@@ -1185,20 +1185,20 @@
 	(main): Parse a single filter file (Defaults.FILTER_INCOMING)
 	instead of multiple list files looking for disposal instructions.
 	Obsoletes BLACKLIST, WHITELIST, SACRED_FILE, and REVOKED_FILE.
-	
+
 2001-11-07  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-inject (inject_message): Add 'as' as an aliases for 'exp'.
 	(main): FilterParser.firstmatch now returns the matching line as
 	well.
-	
+
 2001-11-06  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-inject: Parse an single 'outgoing' style filter file to
 	obtain the tagging information rather than combination of 'dated',
 	'sender', 'bare', 'exp', 'ext', and 'keyword'.  X-TMDA now uses
 	the 'action=option' syntax rather than 'action option'
-	
+
 2001-10-29  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-inject (main): Don't downcase address_list since
@@ -1211,7 +1211,7 @@
 
 	* tmda-inject (inject_message): Support MESSAGE_FROM_STYLE.
 
-	(main): Add support for tagging messages with keyword addresses 
+	(main): Add support for tagging messages with keyword addresses
 	that match KEYWORD_FILE.
 
 	(main): Fixed a bug where if the recipient list was being passed
@@ -1237,7 +1237,7 @@
 	(main): Add X-TMDA: keyword support.  Also convert the first
 	section of X-TMDA to lowercase before evaluating.  Previously, a
 	non-lowercase tag type (e.g, X-TMDA: SENDER) would break things.
-	
+
 2001-10-23  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (verify_keyword_cookie): New function.
@@ -1247,9 +1247,9 @@
 	that's the same as ext.
 
 	(main): Verify the cookie if cookie_type is 'keyword'.
-	
+
 	* tmda-check-address: Add support for verifying keyword addresses.
-	
+
 	* tmda-keyword-address: New program to generate a tagged
 	(keyword-style) e-mail address from the command-line.
 
@@ -1273,7 +1273,7 @@
 
 	(verify_confirm_cookie): Clarify the LOGFILE entries before
 	bounce.
-		
+
 2001-10-09  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-sendmail (main): Bugfix.  Recipients being passed to
@@ -1294,14 +1294,14 @@
 	and then cycle back through the loop.  Instead, we just bounce the
 	message for confirmation request if we reach that point.  The
 	result is much cleaner code.
-	
+
 2001-10-08  Jason R. Mastaler  <jason@mastaler.com>
 
 	* tmda-filter (main): Fix a thinko where any incoming message
 	would be delivered if the COOKIE_TYPE was 'bare', and none of the
 	list files were matched.  Instead, send back a confirmation
 	request.
-	
+
 2001-10-08  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (inject_pending): For consistency, X-TMDA-Confirmed
@@ -1311,7 +1311,7 @@
 	invoked with `-F'.
 
 	* tmda-inject (main): Update exit status codes from Defaults.py.
-	
+
 	(inject_message): MTA generalization.  Remove use of
 	qmail-specific environment variables to tag the message.  Instead,
 	set the "From:" header, and then set the envelope sender address
@@ -1322,7 +1322,7 @@
 	(main): Rather than setting qmail-specific environment variables,
 	append to the `envelope_sender_address' and `sender_full_name'
 	lists to build the sender tag.
-	
+
 	* tmda-sendmail: Remove qmail-specific bits.
 
 2001-10-05  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
@@ -1339,7 +1339,7 @@
 
 	(main): Ditto.  Also check for Postfix's EXTENSION environment
 	variable which is analogous to qmail's EXT.
-	
+
 	(send_bounce): Use the more general SENDMAIL interface to send
 	confirmation messages rather than INJECT.  We pass
 	BOUNCE_ENV_SENDER as the argument to `sendmail -f' to set the
@@ -1349,19 +1349,19 @@
 	confirmation messages rather than INJECT.  We parse the
 	Return-Path header from the message and pass that as the argument
 	to `sendmail -f' to set the envelope sender.
-	
+
 2001-09-26  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (inject_pending): Change `X-Confirmed' header to
 	`X-TMDA-Confirmed' to avoid potential clashes with other headers
 	of that name.  Modify the format of the header contents
 	accordingly.
-	
+
 2001-09-24  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (verify_confirm_cookie): Compactify string.split
 	code.
-	
+
 2001-09-17  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-keygen (keygen): When /dev/urandom is not available, warn
@@ -1390,7 +1390,7 @@
 2001-09-05  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (locate_pending): Support WHITELIST_AUTO_APPEND.
-	
+
 2001-09-04  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (bouncegen): Add `original_message_headers' as an
@@ -1456,7 +1456,7 @@
 	just yet.
 
 	* tmda-sender-address (address): Ditto.
-	
+
 	* tmda-filter (main): Allow ANY mail that has a certain regular
 	expression to go through. So, let's say you wanted any mail about
 	car.*accident to come through, you can do so.
@@ -1480,20 +1480,20 @@
 
 	(main): Don't set QMAILNAME in the environment if the From: header
 	is lacking the user's full name.
-	
+
 	* tmda-dated-address: Add an option to specify the address to base
 	the tagging on vs. the default USERNAME/HOSTNAME settings.
 	Patch contributed by Ron Bickers.
 
 	* tmda-sender-address: Ditto.
-		
+
 2001-08-15  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-clean: Added months (M) and years (Y).
 
 2001-07-26  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
-	* tmda-filter (main): Much cleaner cookie parsing.  
+	* tmda-filter (main): Much cleaner cookie parsing.
 	Patch contributed by Ron Bickers.
 
 2001-07-23  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
@@ -1504,7 +1504,7 @@
 	(main): Check for 'confirm' addresses before looking at the
 	whitelist in case a confirmation is sent from a whitelisted
 	sender.
-		
+
 	(bouncegen): Add optional 'dated' and 'sender' variables if
 	specified in the .tmdarc.
 
@@ -1545,9 +1545,9 @@
 
 	(bouncegen): New function that replaces both bounce_dated() and
 	bounce_sender().
-	
+
 	(send_bounce): Add headers in the templates instead of here.
-	
+
 2001-07-03  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-check-address: New program to check the validity of tagged
@@ -1559,7 +1559,7 @@
 2001-06-25  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (envelope_recipient): Use the `X-Originally-To'
-	header for the envelope_recipient value if it exists.  
+	header for the envelope_recipient value if it exists.
 	Patch contributed by Ron Bickers.
 
 	(main): No need to lookup $SENDER a second time.
@@ -1574,7 +1574,7 @@
 
 	* tmda-filter (main): Use Util.findmatch instead of
 	Util.substring_match.
-	
+
 2001-06-08  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (verify_dated_cookie): Check for the discard
@@ -1587,7 +1587,7 @@
 	sys.prefix/share/tmda/.
 
 	(bounce_sender): Ditto.
-	
+
 2001-06-04  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-filter (envelope_sender): The envelope sender is used in
@@ -1611,7 +1611,7 @@
 	(send_bounce): New function that creates and sends a bounce
 	message back to the envelope sender with an 'X-Delivery-Agent'
 	header added for easier identification.
-	
+
 2001-06-01  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* tmda-inject (main): Fix to make 'QMAILRCPTS' addresses match
@@ -1631,7 +1631,7 @@
 	* tmda-filter (main): Add the '-d' option to silently discard the
 	message and stop processing of the .qmail file (ERR_STOP) instead
 	of bouncing the message back to sender.
-	
+
 	* tmda-inject (main): When using TMDA with qfilter, Bcc recipients
 	are silently ignored since they aren't in the headers at the time
 	qfilter passes the message to tmda-inject.  Fix this by making
@@ -1657,7 +1657,7 @@
 
 	* tmda-filter (main): Add support for "pre-extension" definitions
 	in /var/qmail/users/assign.
-	
+
 	* tmda-inject (main): Special case files can now contain
 	substrings instead of only explicit addresses to match.  To
 	support this, exp and ext cases are now stored in lists like the
@@ -1704,7 +1704,7 @@
 
 	* tmda-dated-address: Ditto.
 
-	* tmda-sender-address: Ditto 
+	* tmda-sender-address: Ditto
 
 	* tmda-filter (main): Add support for qmail virtualdomains as
 	described in qmail-send(8).

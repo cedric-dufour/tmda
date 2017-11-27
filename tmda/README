@@ -9,7 +9,7 @@ reduce the amount of spam (Internet junk-mail) you receive.  TMDA
 strives to be more effective, yet less time-consuming than traditional
 spam filters.  TMDA can also be used as a general purpose local mail
 delivery agent to filter, sort, deliver and dispose of incoming mail.
-                                                   
+
 The technical countermeasures used by TMDA to thwart spam include:
 
 * whitelists: accept mail from known, trusted senders.

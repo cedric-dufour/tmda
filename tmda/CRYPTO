@@ -7,7 +7,7 @@ functions such as SHA-1 and MD5.
 
 For more information, see:
 
-http://en.wikipedia.org/wiki/HMAC 
+http://en.wikipedia.org/wiki/HMAC
 http://www.faqs.org/rfcs/rfc2104.html
 
 
@@ -21,14 +21,14 @@ The format for a 'dated' address is:
     (For example, jason-dated-988298746.9d619c@mastaler.com)
 
     DATE is seconds since the epoch in UTC, expressed as an integer.
-  
+
     DATEMAC is an HMAC of DATE.
 
 Incoming 'dated' messages are accepted if:
 
-    1.  DATE >= the current time (i.e, not yet expired) 
+    1.  DATE >= the current time (i.e, not yet expired)
 
-        *AND* 
+        *AND*
 
     2.  DATEMAC is verified by matching it with a new HMAC generated
         against DATE.
@@ -39,7 +39,7 @@ Sender Addresses:
 -----------------
 
 The format for a 'sender' address is:
-    
+
     USERNAME-sender-SENDERMAC@DOMAIN.DOM
 
     (For example, jason-sender-8c54ac@mastaler.com)
@@ -60,7 +60,7 @@ Keyword Addresses:
 ------------------
 
 The format for a 'keyword' address is:
-    
+
     USERNAME-keyword-KEYWORD.KEYWORDMAC@DOMAIN.DOM
 
     (For example, jason-keyword-promos.8w06e8@mastaler.com)

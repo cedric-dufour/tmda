@@ -50,12 +50,12 @@
 	* Pending.py (Message.release): Add the IP address and browser
 	info of the releaser to an 'X-TMDA-CGI' header if the message was
 	released via tmda-cgi.
-	
+
 2006-10-27  Mark Horn  <mark@hornclan.com>
 
 	* Defaults.py: added additional description to
 	ACTION_EXPIRED_DATED
-	
+
 2006-10-07  Jason R. Mastaler  <jason@mastaler.com>
 
 	* pythonlib/email: Sync up with email 4.0.1.
@@ -63,15 +63,15 @@
 2006-10-04  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Defaults.py (PENDING_QUEUE_FORMAT): Add 'maildir'.
-	
+
 2006-09-28  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Defaults.py (PENDING_QUEUE_FORMAT): New variable.
-	
+
 2006-09-27  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Pending.py: Modified to use new Tmda.Queue interface.
-	
+
 	(Queue.cleanQueue): Removed.  Functionality moved into
 	Queue.Queue.
 
@@ -93,7 +93,7 @@
 	(Queue.listReleasedIds): Ditto.
 	(Queue.checkDelivered): Ditto.
 	(Message.wasDelivered): Ditto.
-	
+
 2004-03-01  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* Defaults.py: Removed CONFIRM_ACCEPT_ALREADY_CONFIRMED_NOTIFY,
@@ -119,13 +119,13 @@
 2004-02-17  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Util.py (wraptext): Utilize the new builtin textwrap module.
-	
+
 2004-02-05  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Defaults.py (_path_vars): New dict to hold variables that
 	contain a pathname, and therefore should be run through
 	os.path.expandusers().
-	
+
 2004-02-05  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Defaults.py (MAIL_FOLLOWUP_TO): New variable.
@@ -142,14 +142,14 @@
 2004-01-11  Jason R. Mastaler  <jason@mastaler.com>
 
 	* MessageLogger.py (MessageLogger.write): Use Util.make_date().
-	
+
 	* Pending.py (Message.getDate): Use Util.make_date().
 
 2004-01-10  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Pending.py (Message.release): Use Util.make_date() for
 	X-TMDA-Released.
-	
+
 2004-01-09  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Defaults.py (DATED_TIMEOUT): TIMEOUT renamed.
@@ -178,13 +178,13 @@
 	(Message.delete): Ditto.
 	(Message.whitelist): Ditto.
 	(Message.blacklist): Ditto.
-		
+
 	(Queue.mainLoop): Remove call to Message.initMessage().
 	(Message.release): Ditto.
 	(Message.delete): Ditto.
 	(Message.whitelist): Ditto.
 	(Message.blacklist): Ditto.
-	
+
 2003-12-03  Jason R. Mastaler  <jason@mastaler.com>
 
 	* AutoResponse.py (AutoResponse.create): Add an RFC 2183
@@ -249,7 +249,7 @@
 
 	* Deliver.py (Deliver.__deliver_maildir): Use os.open() and
 	os.fdopen() in place of __builtins__.open() to create the file.
-	
+
 2003-10-13  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Defaults.py (OUTGOINGMAIL): Change default to 'sendmail'.
@@ -260,7 +260,7 @@
 	* Util.py (sendmail): If using /usr/sbin/sendmail, pass a tuple of
 	arguments into pipecmd() instead of a string to avoid the shell
 	completely.  Also, add '-i' to the list of args.
-	
+
 	* Version.py (PLATFORM): Use the more descriptive 'platform'
 	module if it's available.
 
@@ -363,7 +363,7 @@
 2003-06-05  Cory Wright <cwright@standblue.net>
 
 	* Util.py (maketext): Recognize TEMPLATE_DIR_MATCH_RECIPIENT.
-	
+
 	* Defaults.py (TEMPLATE_DIR_MATCH_RECIPIENT): New variable
 
 2003-06-04  Tim Legant  <tim@catseye.net>
@@ -410,10 +410,10 @@
 
 	* Pending.py (Queue.cleanQueue): New method for pending queue
 	cleanup.
-	
+
 	* Defaults.py (PENDING_LIFETIME, PENDING_CLEANUP_ODDS): New
 	variables.
-	
+
 2003-04-26  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Util.py (msg_from_file): New function.
@@ -421,7 +421,7 @@
 2003-04-23  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* Util.py (make_date): Don't import Defaults.LOCALDATE.
-	
+
 	* Defaults.py (TMDAINJECT): New variable.
 	(LOCALDATE): Removed.
 
@@ -434,7 +434,7 @@
 
 	* Util.py (msg_as_string): New function.  Replacement for
 	Message.as_string().
-	
+
 	* AutoResponse.py (AutoResponse.__init__): Use
 	Util.msg_as_string() instead of msg.as_string().
 	(AutoResponse.send): Ditto.
@@ -460,7 +460,7 @@
 	* Util.py (headers_as_string): Return the raw (undecoded) headers
 	if we encounter a HeaderParseError exception while trying to
 	decode the headers.
-	
+
 2003-03-12  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* FilterParser.py (_FilterFile.__init__): Add `-domains', a new
@@ -470,7 +470,7 @@
 
 	(FilterParser.firstmatch): Use __extract_domains if the `-domains'
 	argument is specified.
-	
+
 2003-03-04  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* FilterParser.py (_FilterFile.__init__): Add `pipe', a new filter
@@ -490,7 +490,7 @@
 	* Message.py: New module.
 
 2003-02-13  Mark Horn  <mark@hornclan.com>
-	
+
 	* Defaults.py: Added ACTION_HEADER_INCOMING to enable the logfile
 	stuff to get written in a header message.
 
@@ -530,7 +530,7 @@
 	* Deliver.py (Deliver.__deliver_maildir): Strengthen the
 	uniqueness of maildir filenames based on djb's updated maildir
 	spec.
-	
+
 2003-01-20  Tim Legant  <tim@catseye.net>
 
 	* MTA.py (MTA.getvdomainprepend): Added this method to abstract
@@ -597,7 +597,7 @@
 2002-12-02  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* Defaults.py (GLOBAL_TMDARC): Don't skip if there is an error.
-	
+
 2002-11-25  David Guerizec  <david@guerizec.net>
 
 	* Pending.py: new module
@@ -605,7 +605,7 @@
 2002-11-21  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* Defaults.py: Removed DELIVERED_CACHE and DELIVERED_CACHE_LEN.
-	
+
 2002-11-12  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* Util.py (confirm_append_address): New function.
@@ -629,18 +629,18 @@
 
 	* AutoResponse.py (AutoResponse.create): Add Version.CODENAME to
 	X-Delivery-Agent.
-	
+
 2002-11-01  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* Util.py (maketext): Recognize TEMPLATE_DIR_MATCH_SENDER.
-	
+
 	* Defaults.py (TEMPLATE_DIR_MATCH_SENDER): New variable.
 
 2002-10-18  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* Util.py (normalize_sender): New fuction, moved from
 	tmda-rfilter.
-	
+
 	* Defaults.py (AUTORESPONSE_INCLUDE_SENDER_COPY): New variable.
 
 	(TEMPLATE_EMAIL_HEADERS): Ditto.
@@ -666,7 +666,7 @@
 	(headers_as_raw_string): Ditto.
 	(headers_as_string): Ditto.
 	(rename_headers): Ditto.
-	
+
 	* Deliver.py: Use an email.Message object rather than an
 	rfc822.Message object and message body.
 
@@ -712,15 +712,15 @@
 
 	* Defaults.py (SMTPSSL, SMTPSSL_KEYFILE, SMTPSSL_CERTFILE): New
 	variables.
-	
+
 2002-08-21  Jason R. Mastaler  <jasonrm@hrothgar.la.mastaler.com>
 
 	* Defaults.py (SMTPAUTH_USERNAME, SMTPAUTH_PASSWORD): New
 	variables.
-	
+
 	* SMTP.py (Connection.__connect): Add support for SMTP
 	authentication.
-	
+
 	* Defaults.py (MAX_AUTORESPONSES_PER_DAY, RESPONSE_DIR): New
 	variables.
 
@@ -759,7 +759,7 @@
 
 	* FilterParser.py (FilterParser.__findvarsub): Query the Defaults
 	vardict when checking the namespace.
-	
+
 2002-08-06  Tim Legant  <tim@catseye.net>
 
 	* FilterParser.py: Added macro substitution and variable
@@ -780,7 +780,7 @@
 	variables.
 
 	Renamed ADDED_HEADERS to ADDED_HEADERS_CLIENT.
-	
+
 2002-06-20  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Util.py: New helper functions: getuid, getgid, gethomedir, and
@@ -794,7 +794,7 @@
 
 	* Defaults.py: Add PENDING_WHITELIST_APPEND &
 	PENDING_BLACKLIST_APPEND.
-	
+
 2002-06-15  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Cookie.py (make_keyword_cookie): Replace RECIPIENT_DELIMITER
@@ -828,7 +828,7 @@
 
 	* Cookie.py: Replace all uses of the string module with string
 	methods.
-	
+
 2002-05-22  Jason R. Mastaler  <jason@mastaler.com>
 
 	* Util.py (sendmail): Terminate commandline switch processing with
@@ -856,7 +856,7 @@
 	* Util.py (getfilemode): New utility function which takes a file
 	and returns its octal number representing the file permissions bit
 	pattern.
-		
+
 	* Defaults.py (CRYPT_KEY_FILE): Read CRYPT_KEY from CRYPT_KEY_FILE
 	which defaults to ~/.tmda/crypt_key.
 
@@ -886,7 +886,7 @@
 
 	* Defaults.py: Include example settings for optional variables
 	here instead of sample.tmdarc.
-	
+
 2002-04-30  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Version.py (PLATFORM): Use distutils.util.get_platform().
@@ -895,7 +895,7 @@
 
 	* Defaults.py (PENDING_DELETE_APPEND, PENDING_RELEASE_APPEND): New
 	variables.
-	
+
 2002-04-28  Jason R. Mastaler  <jason@mastaler.com>
 
 	* HMAC.py: XOR optimizations.
@@ -933,7 +933,7 @@
 	* Version.py (ALL): Separate PLATFORM and ARCH with '/'.
 
 	(PLATFORM, ARCH): Replace any frontslashes with underscores.
-		
+
 2002-03-30  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py: Failure notices can now be disabled by setting the
@@ -950,7 +950,7 @@
 	tmda-pending's `release' capability.
 
 	(DELIVERED_CACHE, DELIVERED_CACHE_LEN): New variables.
-	
+
 2002-03-25  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Version.py (ARCH, PLATFORM): Replace any spaces with
@@ -975,7 +975,7 @@
 
 	* Defaults.py (MESSAGE_FROM_STYLE): Deprecate 'parens' and
 	'unquoted'.
-	
+
 	* Util.py (make_date): Use the formatdate() method from
 	email.Utils (if available) or rfc822 instead of doing it ourselves.
 
@@ -991,7 +991,7 @@
 
 	* Util.py (maketext): Search for the templatefile in a series of
 	directories.  First match wins.
-	
+
 	* Defaults.py (TEMPLATE_DIR): New variable, replaces
 	CONFIRM_ACCEPT_TEMPLATE and CONFIRM_REQUEST_TEMPLATE.
 
@@ -1045,13 +1045,13 @@
         error checking.
 
         (sendmail): New function to send e-mail with the sendmail program.
-                
+
         * MTA.py (MTA.deliver): Use Util.pipecmd() to deliver the
         message.  Also raise an exception rather than sys.exit(75) upon
         error.
-                
+
         * Errors.py: Add DeliveryError for delivery module related errors.
-        
+
         * Defaults.py: Remove SENDMAIL path checking; Util.sendmail() will
         catch any such errors.
 
@@ -1067,7 +1067,7 @@
 
 	(FilterParser.firstmatch): Factored above function out of
 	'from-/to-file' clause to clean up code.
-	
+
 	* FilterParser.py (FilterParser.firstmatch): Made autodbm
 	functionality use a surrogate file to determine whether the DBM is
 	up to date.  This is because of the varied naming of DBM files
@@ -1092,7 +1092,7 @@
 
 	* FilterParser.py (FilterParser): Modified 'in_action' and
 	'action_option' regexps to handle new option on 'deliver' action.
-	
+
 	(FilterParser.__buildactions): Allowed incoming filter actions to
 	have options.
 
@@ -1102,7 +1102,7 @@
 	instead of using print; sys.exit(75).
 
 	* Errors.py: Add ConfigError for tmdarc related errors.
-	
+
 2002-02-21  Tim Legant  <tim@catseye.net>
 
 	* FilterParser.py (FilterParser.__readrule): Fixed bug.  Last rule
@@ -1211,7 +1211,7 @@
 
 	(unpickle): New helper function to retrieve an object from a
 	Python pickle file.
-	
+
 	* Defaults.py (PENDING_CACHE, PENDING_CACHE_LEN): New variables
 	used by tmda-pending's --cache option.
 
@@ -1221,7 +1221,7 @@
 
 	* Version.py (PLATFORM): Just use sys.platform instead of
 	distutils.util.get_platform().
-	
+
 2002-02-07  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Util.py (seconds): Remove the exit(75) upon exception, as
@@ -1234,7 +1234,7 @@
 	(maketext): Ditto.
 
 	(substring_match): Removed.
-	
+
 2002-02-04  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Util.py (make_msgid): Change the idstring to 'TMDA', and reverse
@@ -1244,7 +1244,7 @@
 
 	* FilterParser.py: Modified 'tag_action' regular expression to
 	allow arbitrary quoted strings.
-	
+
 	(FilterParser.__buildactions): Allow arbitrary headers with quoted
 	string values.
 
@@ -1279,15 +1279,15 @@
 2002-01-30  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* HMAC.py (_strxor): Python2ism - string method ok to use now.
-	
+
 	* Util.py (gethostname): Remove Python 1.x support.
 
-	* Defaults.py (CRYPT_KEY): Use binascii.unhexlify instead of 
+	* Defaults.py (CRYPT_KEY): Use binascii.unhexlify instead of
 	Util.unhexlify.
-	
+
 	* Cookie.py (confirmationmac): Use binascii.hexlify instead of
 	Util.hexlify.
-	
+
 	(datemac): Ditto.
 
 	(make_sender_cookie): Ditto.
@@ -1328,14 +1328,14 @@
 
 	* (FilterParser.__parserule): Text matched by 'matches' now
 	appears in either group 2 or group 3.
-	
+
 2002-01-24  Tim Legant  <tim@catseye.net>
 
 	* FilterParser.py (FilterParser): Removed 'whitespace' and
 	source_match regular expressions and added 'most_sources',
 	'hdrbody_sources' and 'matches' regular expressions. Modified
 	'tag_action' regular expression.
-	
+
 	* (FilterParser.__readrule): Changed whitespace collapse to simply
 	substitue a space for every tab.
 
@@ -1430,7 +1430,7 @@
 	(TMDA): 0.43 --> 0.43+.
 
 	* Errors.py: New module to hold TMDA custom exceptions.
-	
+
 2001-12-17  Matt Armstrong  <matt@lickey.com>
 
 	* Cookie.py (make_keyword_cookie): Substitute '?' for keyword
@@ -1481,7 +1481,7 @@
 	* Defaults.py (DELIVERY_AGENT): Modify DELIVERY_AGENT to use
 	distutils.util.get_platform() if available which is more
 	descriptive than sys.platform.
-	
+
 2001-12-08  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Util.py: Only import time once at the toplevel.
@@ -1489,7 +1489,7 @@
 	* Defaults.py: Remove TIMEZONE, and import the Util module after
 	/etc/tmdarc and ~/.tmdarc are read so TZ can be set there if need
 	be.
-	
+
 2001-12-07  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py (MESSAGE_FROM_STYLE):  Add an `unquoted' option
@@ -1527,7 +1527,7 @@
 	getting spammed from "@="@randomdomain.com, you will be able to
 	match this using the current syntax.
 	Patch contributed by Ron Bickers.
-		
+
 2001-11-26  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* FilterParser.py (FilterParser.firstmatch): Bugfix.  The DBM
@@ -1554,7 +1554,7 @@
 	those cases, added a second break if self.action was set.  This
 	oversight was causing to/from-dbm and body/header-file matches to
 	be ignored.
-	
+
 2001-11-17  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py: Look for FILTER_INCOMING and FILTER_OUTGOING in the
@@ -1563,7 +1563,7 @@
 
 	* FilterParser.py: Moved filter file documentation into
 	config-filter.html.
-	
+
 2001-11-15  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py: Change default location of FILTER_INCOMING and
@@ -1572,7 +1572,7 @@
 	* Util.py (gethostname): socket module was not returning the FQDN
 	on Solaris.  So now we at least attempt to first use
 	socket.getfqdn() which does work on Solaris, but only on Python2.
-	
+
 2001-11-14  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py (BARE_APPEND): New variable specifying the filename
@@ -1595,7 +1595,7 @@
 	default.
 
 	* Util.py (findmatch): addrs should now be a list to iterate over.
-	
+
 	* FilterParser.py: Add support for incoming filter files.
 
 	* Defaults.py: Remove: BOUNCE_BLACKLIST_CC, BOUNCE_CONFIRM_CC,
@@ -1666,7 +1666,7 @@
 	* Cookie.py (make_keyword_address): Lowercase keyword before
 	creating the keyword address.  E-mail addresses are
 	case-insensitive.
-	
+
 2001-10-23  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Cookie.py (make_keywordmac, make_keyword_cookie,
@@ -1680,8 +1680,8 @@
 2001-10-15  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* MTA.py (Postfix.deliver): Bugfix.  The exit code from
-	LOCAL_DELIVERY_AGENT was not being propagated to the MTA.  
-	(e.g, tmda-filter returns 0 if procmail returns 77.)  
+	LOCAL_DELIVERY_AGENT was not being propagated to the MTA.
+	(e.g, tmda-filter returns 0 if procmail returns 77.)
 	The fix is to do some more processing on the exitcode before
 	passing it to sys.exit.  Patch contributed by Matt Armstrong.
 
@@ -1694,7 +1694,7 @@
 	* Defaults.py (LOCAL_DELIVERY_AGENT): Remove os.path.exists check
 	since it's not necessary to verify this upon each import of
 	Defaults.
-	
+
 2001-10-08  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py: Removed INJECT & INJECT_FLAGS.
@@ -1705,23 +1705,23 @@
 	exit code as that of LOCAL_DELIVERY_AGENT's exit status.
 
 	* Util.py: Replaced ERR_CONFIG and ERR_IO with EX_TEMPFAIL.
-	
+
 	* Defaults.py: Replace qmail-specific exit status codes with
 	general codes that work under both Postfix and qmail.  An
 	"success" code and a "defer" code were all that were necessary in
 	the modules anyway.
-	
+
 	(LOCAL_DELIVERY_AGENT): New variable to specify the path to the
 	local delivery agent, which is necessary if not running qmail.
-	
+
 	(MAIL_TRANSFER_AGENT): New variable to specify which mail transfer
 	agent software we are running.
-	
+
 2001-10-02  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py (RECIPIENT_DELIMITER): New variable specifing the
 	character used to separate user names and address extensions.
-	
+
 	* Cookie.py (make_confirm_address): Replace references to `-' with
 	RECIPIENT_DELIMITER.
 
@@ -1735,7 +1735,7 @@
 2001-09-19  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py (GLOBAL_TMDARC): Add a global configuration file
-	(/etc/tmdarc) that is read first before ~/.tmdarc.  
+	(/etc/tmdarc) that is read first before ~/.tmdarc.
 
 	(TMDA_VERSION): Begin 0.38 development.
 
@@ -1779,7 +1779,7 @@
 
 	* Util.py (append_to_file): New function which appends a string to
 	a textfile.
-	
+
 2001-09-04  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py (CONFIRM_MAX_MESSAGE_SIZE): New variable that
@@ -1803,11 +1803,11 @@
 
 	(mode): Remove check for VIRTUALDOMAINS for sites that don't have
 	any such file.
-	
+
 2001-08-27  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py (USEVIRTUALDOMAINS): Replaces QMAILVIRTUALDOMAINS.
-	
+
 2001-08-24  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py (QMAILVIRTUALDOMAINS): New variable to toggle qmail
@@ -1861,7 +1861,7 @@
 2001-07-22  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py: Remove CONFIRMATION_MODE, BOUNCE_DATED_TEMPLATE,
-	BOUNCE_SENDER_TEMPLATE, and add CONFIRM_REQUEST_TEMPLATE.  
+	BOUNCE_SENDER_TEMPLATE, and add CONFIRM_REQUEST_TEMPLATE.
 
 2001-07-20  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
@@ -1885,16 +1885,16 @@
 
 	* Defaults.py (BOUNCE_DATED_TEMPLATE): Allow for an alternate
 	template based on CONFIRMATION_MODE.
-	
+
 	(BOUNCE_SENDER_TEMPLATE): Ditto.
 
 	* Util.py (writefile): New function to write contents to a
 	new file.
-	
+
 2001-07-11  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Defaults.py (CONFIRMATION_MODE): New variable which turns
-	confirmation mode on or off. 
+	confirmation mode on or off.
 
 	(DATADIR): New variable for TMDA data-manipulation directory.
 
@@ -1951,16 +1951,16 @@
 
 	(BOUNCE_SENDER_TEMPLATE): New variable specifying an optional
 	custom template for 'sender' bounce messages.
-	
+
 2001-06-01  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Util.py (format_timeout): A more efficient implementation which
 	only contains one re.match call.  Also, return the singular
 	version of the unit if the value is 1.
-		
+
 	(seconds): Ditto, plus fix a bug in the sys.exit() call where
 	Defaults wasn't being imported.
-	
+
 2001-05-29  Jason R. Mastaler  <jasonrm@nightshade.la.mastaler.com>
 
 	* Util.py (file_to_list): Allow inline comments in the .tmda-*
@@ -2058,11 +2058,11 @@
 
 	* Cookie.py (datemac): New function to compute an HMAC for a given
 	date in time.
-	
+
 	* Defaults.py (BLOCK_CIPHER): Now obsolete.
 	(CRYPT_IV): Ditto.
 	(HASH_FUNCTION): Ditto.
-	
+
 	* Cookie.py (make_cipher_object): Function now obsolete.
 	(make_sender_cookie): Generate cookies with HMACs.
 	(make_dated_cookie): Generate cookies with HMACs.
