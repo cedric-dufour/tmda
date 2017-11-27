@@ -71,6 +71,10 @@ class AutoResponse:
         """
         self.msgin_as_bytes = Util.msg_as_bytes(msgin)
         self.msgin_headers_as_bytes = Util.headers_as_bytes(msgin)
+        # Do not attach the confirmation response to the confirmation
+        # acceptance notice.
+        if response_type == 'accept':
+            Defaults.AUTORESPONSE_INCLUDE_SENDER_COPY = 0
         # Only do this step if the user wants to include the entire message.
         if Defaults.AUTORESPONSE_INCLUDE_SENDER_COPY > 1:
             max_msg_size = int(Defaults.CONFIRM_MAX_MESSAGE_SIZE)
