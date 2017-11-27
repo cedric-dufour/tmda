@@ -103,8 +103,7 @@ class ConfirmAddress(TaggedAddress):
     def verify(self, dummy=''):
         try:
             (timestamp, pid, hmac) = self.local_parts[-1].split('.')
-            try_hmac = Cookie.confirmationmac(timestamp, pid, self.keyword)
-            if try_hmac != hmac:
+            if not Cookie.verify_confirm_mac(hmac, timestamp, pid, self.keyword):
                 raise BadCryptoError("Invalid cryptographic tag.")
         except ValueError:
             raise BadCryptoError("Invalid cryptographic tag format.")
@@ -171,13 +170,12 @@ class KeywordAddress(TaggedAddress):
     def verify(self, dummy=''):
         parts = self.local_parts[-1].split('.')
         # Not necessary anymore, since '.', among other chars, is
-        # replaced by '?' in Cookie.make_keywordmac().
+        # replaced by '?' in Cookie.make_keyword_cookie().
         keyword = '.'.join(parts[:-1])
         if not keyword:
             raise BadCryptoError("Invalid cryptographic tag format.")
         hmac = parts[-1]
-        try_hmac = Cookie.make_keywordmac(keyword)
-        if try_hmac != hmac:
+        if not Cookie.verify_keyword_mac(hmac, keyword):
             raise BadCryptoError("Invalid cryptographic tag.")
 
     def keyword(self):
@@ -204,21 +202,21 @@ class SenderAddress(TaggedAddress):
     # Try to match against the HMAC generated from the full sender first.
     # If that doesn't match, try to match against the full domain, removing
     # domain parts (eg, 'foo.example.com' => 'example.com') until there's a
-    # match or there are no more parts left.
+    # match or before we reach the top-level domain ('com').
     def verify(self, sender):
         sender = str(sender).lower()
         hmac = self.local_parts[-1]
-        try_hmac = Cookie.make_sender_cookie(sender)
-        if try_hmac != hmac:
+        match = Cookie.verify_sender_mac(hmac, sender)
+        if not match:
             domain = sender.split('@')[-1]
-            dot = '.'
-            domain_parts = domain.split(dot)
-
-            while try_hmac != hmac and domain_parts:
-              try_hmac = Cookie.make_sender_cookie(dot.join(domain_parts))
-              del domain_parts[0]
-            if try_hmac != hmac:
-              raise BadCryptoError("Invalid cryptographic tag.")
+            domain_parts = domain.split('.')
+            while len(domain_parts)>1:
+                if Cookie.verify_sender_mac(hmac, '.'.join(domain_parts)):
+                    match = True
+                    break
+                del domain_parts[0]
+        if not match:
+            raise BadCryptoError("Invalid cryptographic tag.")
 
     def hmac(self):
         return self.local_parts[-1]

@@ -63,8 +63,9 @@ if opts.full_version:
 def keygen():
     # Use the kernel's random number generator.
     if os.path.exists(opts.device):
-        key = open(opts.device,'rb').read(20)
-        return str(binascii.hexlify(key), 'utf-8')
+        # Provision for key size up to 512 bits (can't hurt "shorter" algos)
+        key = open(opts.device,'rb').read(64)
+        return binascii.hexlify(key).decode()
     #elif sys.platform == 'win32':
         # The Windows equivalent of polling /dev/urandom is to call the Windows
         # Crypto/API function "CryptGenRandom". At present there is no wrapper
@@ -76,7 +77,7 @@ def keygen():
 def main():
 
     if not opts.batch:
-        print("Generating a unique, 160-bit private key, please wait a moment..")
+        print("Generating a unique, 512-bit private key, please wait a moment...")
         print()
 
     key = keygen()
@@ -94,8 +95,8 @@ def main():
         print("exiting!")
         sys.exit()
 
-    if len(key) != 40:
-        print("Oops, generated key is not 40-characters long, exiting!")
+    if len(key) != 128:
+        print("Oops, generated key is not 512 bits long, exiting!")
         sys.exit()
 
     print(key)

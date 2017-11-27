@@ -153,3 +153,131 @@ sufficient protection when you consider that to test a forged HMAC,
 the attacker must actually send you an e-mail message and wait for the
 result.  Longer HMACs also mean longer e-mail addresses to work with.
 
+UPDATE (November 2017, by Cédric Dufour; reviews welcome):
+
+Speaking of vulnerabilities:
+With mathematical flaws being discovered in cryptographic algorithms, compu-
+tation power reaching peaks one never dared imagine and the help of techniques
+such as rainbow tables, some cryptographic functions, like the well-known MD5
+and SHA1 hash functions, are no longer considered secure [*1,*2]. MD5 and SHA1
+have been mathematically proven to be *practically* prone to collisions attacks,
+while MD5 has been the object of rainbow table reverse-mapping.
+Hoes does this affect HMAC, which relies on these functions to do its job ?
+HMAC was invented in 1996 [*3] and has undergone extensive scrutiny by security
+researchers. It has been proven [*4] HMAC is (still) secure even if the asso-
+ciated hash function is not, provided this hash function behaves like a pseudo-
+random function (PRF). MD5 and SHA1 and other commonly used hash functions
+do fall into this category and, so far, haven't been proven otherwise.
+Now, what about attacks against HMAC itself ?
+As with other hash functions, one may differentiate three type of threats:
+a. Brute-force, pre-image and second pre-image attacks:
+   Where the attacker:
+    - chooses a (forged) message [M'] and attempts to find the correspon-
+      ding HMAC [H']
+    - looks for a (forged) message [M'] that produces a given HMAC [H]
+    - looks for a (forged) message [M'] that produces the same HMAC [H]
+      as a known (valid) message [M]
+   In all three cases, the probability of finding the correct value is 1 over
+   2^[B], where [B] is the length (in bits) of the HMAC output. This means
+   the attacker will need 2^[B] attempts, in average, to succeed.
+b. Collision attack:
+   Where one looks for a two messages [M1] and [M2] that produces the same
+   HMAC [H'']. Such attacks fall into the category of the Birthday attack [*5],
+   where the probability of finding a match is 2^([B]/2).
+c. Key retrieval attack:
+   Where one attempts to deduce the key [K] by observing enough of pairs
+   {[M],[H]} by exploiting some (mathematical) vulnerability of the algorithm.
+   There is currently no known *practical* vulnerability on HMAC, although
+   recent researchs tend to indicate that some hash functions might make HMAC
+   prone to key retrieval in a space much smaller than 2^[B] [*6].
+[*1] https://en.wikipedia.org/wiki/MD5#Collision_vulnerabilities
+[*2] https://en.wikipedia.org/wiki/SHA-1#SHAttered_.E2.80.93_first_public_collision
+[*3] https://cseweb.ucsd.edu/~mihir/papers/kmd5.pdf
+[*4] https://cseweb.ucsd.edu/~mihir/papers/hmac-new.pdf
+[*5] https://en.wikipedia.org/wiki/Birthday_attack
+[*6] https://eprint.iacr.org/2015/149.pdf
+
+In the context of TMDA:
+"messages" [M] are the date, keyword or sender address, while "HMACs" [h]
+are the 24-bit tag, shortened from the original 160-bit SHA1 HMACs [H] and
+appendend to the "message".
+a. Brute-force attack:
+   TMDA using a (much) shortened "HMAC" [h] of length [b] means a brute-force
+   attack needs spanning only 2^[b] values, in average, to find a match.
+   However, one must keep in mind that "testing" each candidate {[M'],[h']}
+   pair - e.g. by sending message to the corresponding TMDA keyword address -
+   may be impractical, given the usually high latencies involved in e-mail
+   exchanges.
+b. Collision attack:
+   Collisions attacks require the attacker being left the choice of all three
+   messages [M1], [M2] and corresponding HMAC [H'']. This is the case for
+   example in X.509 SSL certificate, where the attacker would create a certi-
+   ficate [M1] along its hash [H''], have the Certificate Authority sign this
+   hash, and then use the certificate [M2] instead, along the signed [H''].
+   Fortunately, in TMDA, the "HMAC" [h] always originates from TMDA itself and
+   can never be chosen by the attacker. This makes TMDA immune to collision
+   attacks.
+c. Key retrieval attack:
+   Such attack is not affected by the shortened length [b] of the TDMA "HMAC",
+   which actually would even make it more difficult, given the "loss" of
+   information. No *practical* attack being known on HMAC itself, TMDA is
+   also safe in this regard.
+In conclusion, this leaves brute-force attack on its shortened "HMAC" [h] the
+sole threat to TMDA, with a complexity of 2^[b], where [b], the bit length of
+the "HMAC" [h] is much shorter than its originating HMAC [H] counterpart of
+length [B].
+
+About e-mail exchange latencies:
+We have stated that brute-force attacks on TMDA "HMAC" would be impractical
+given the usually high latenticies involved in e-mail exchanges. However, those
+latencies could be significantly reduced should the attack take place "locally"
+(e.g. on a "shared hosting" server). It this case, one can reasonably expect
+latencies dropping to sub-microseconds figures; let's assume 1us = 10e-6s for
+the sake of the argument. A brute-force attack on TMDA shortened (24-bit)
+"HMAC" [h] needs only 2^24 attempts, in average, to be successful. 2^24 *
+10e-6s = 16 seconds (!). Raising the "HMAC" size to 32 bits leads to ~1 hour,
+40 bits to ~13 days and 48 bits to ~9 years.
+40-bit "HMAC" already become impractical to use, considering the 10-char (hexa-
+decimal) tag that needs to be appended to the address. Longer "HMACs" even more
+so. One way to address this issue is opting for (lowercase) alphanumeric enco-
+ding, which allows to reduce the tag length by 30% (40-bit "HMAC" ~ 8-char tag).
+Low "local" latencies potentially becoming problematic, one can "artificially"
+increase the HMAC processing time by associating it with an iterative function
+such as PBKDF2 (Password-Based Key Derivation Function, v2). Nowadays, 100'000
+"rounds" are commonly recommended, leading to processing times that are in the
+order of 100ms to 1s. The resulting average search time would thus become:
+~19 days for a 24-bit "HMAC", ~14 years for 32-bit, ~34 centuries for 40-bit.
+
+About key compromise:
+Given the new era of Viruses, Trojans and general cyber-insecurity that opens
+up to the Internet, TMDA key (file) compromission is a genuine threat, as for
+any other secret stored on one's computer(s).
+Also, one must be extremely wary of file permissions, especially in enterprise
+environments: wrong permissions on the key file - even if only temporarily -
+can lead to the key file being readable over a long period of time, thanks to
+storage features like snapshots (should a snapshot be performed while the per-
+missions were wrong). In such environments, one MUST make sure file permissions
+are correct BEFORE writing content to it; example given:
+ 1. touch ~/.tmda/crypt_key
+ 2. chmod 600 ~/.tmda/crypt_key
+ 3. tmda-keygen -b > ~/.tmda/crypt_key
+(should a snapshopt occur between 1. and 2., no sensible content would have
+ been written to the file yet)
+
+Bottom-line:
+ - TMDA "legacy" HMAC algorithm (SHA1) and default 24-bit tags are NO LONGER a
+   safe bet IF brute-force attacks can be performed locally (e.g. on a "shared
+   hosting" server). In that case, opting for a longer "HMAC" size and an
+   iterative algorithm becomes a necessity.
+ - Key compromise CAN happen. Being able to perform a key rollover gracefully
+   (gradually) might well save the day.
+
+TMDA 1.3 thus introduces three new features:
+ 1. encode "HMAC" using the full (lowercase) alphanumeric space, thus saving
+    30% on the length of the corresponding tag
+ 2. allow the user to specify the HMAC (hash) algorithm to use, including its
+    PBKDF2 derivative
+ 3. allow key rollover, such as to switch one's HMAC key/algo/size to
+    new values without breaking the old ones (the time it takes to
+    replace all the tagged addresses)
+

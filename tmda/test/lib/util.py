@@ -12,6 +12,7 @@ def fixupFiles():
     '''
 
     os.chmod(os.path.join(userDir, '.tmda', 'crypt_key'), 0o600)
+    os.chmod(os.path.join(userDir, '.tmda', 'crypt_key.rollover'), 0o600)
     os.chmod(os.path.join(filesDir, 'test-ofmipd.auth'), 0o600)
 
     # We need a copy of home/testuser/.tmda/config at home/testuser/config. This

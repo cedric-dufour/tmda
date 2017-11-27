@@ -6,3 +6,9 @@ SENDMAIL_PROGRAM = './bin/fakemail.py'
 FULLNAME = '"Tést" User'
 USERNAME = 'testuser'
 HOSTNAME = 'example.com'
+
+HMAC_ENCODING_COMPAT = True
+HMAC_ALGO_ROLLOVER = 'sha1'
+HMAC_BYTES_ROLLOVER = 3
+CRYPT_KEY_FILE_ROLLOVER = '~/.tmda/crypt_key.rollover'
+

@@ -500,11 +500,10 @@ def verify_confirm_cookie(confirm_cookie, confirm_action):
     confirmed_mailid = '%s.%s' % (confirm_timestamp, confirm_pid)
     # pre-confirmation
     if confirm_action == 'accept':
-        new_confirm_hmac = Cookie.confirmationmac(confirm_timestamp,
-                                                  confirm_pid, confirm_action)
         # Accept the message only if the HMAC can be verified and the
         # message exists in the pending queue.
-        if not (confirm_hmac == new_confirm_hmac):
+        if not Cookie.verify_confirm_mac(confirm_hmac, confirm_timestamp,
+                                         confirm_pid, confirm_action):
             do_default_action(Defaults.ACTION_INVALID_CONFIRMATION.lower(),
                               'action_invalid_confirmation',
                               'bounce_invalid_confirmation.txt')
@@ -547,11 +546,9 @@ def verify_confirm_cookie(confirm_cookie, confirm_action):
             release_pending(confirm_timestamp, confirm_pid, msg)
     # post-confirmation
     elif confirm_action == 'done':
-        # Regenerate the HMAC for comparison.
-        new_confirm_hmac = Cookie.confirmationmac(confirm_timestamp,
-                                                  confirm_pid, 'done')
         # Accept the message only if the HMAC can be verified.
-        if not (confirm_hmac == new_confirm_hmac):
+        if not Cookie.verify_confirm_mac(confirm_hmac, confirm_timestamp,
+                                         confirm_pid, 'done'):
             # Ask for confirmation instead of bouncing or dropping the
             # message in case the sender inadvertently had an
             # X-TMDA-Confirm-Done field in this message, such as when
@@ -617,7 +614,7 @@ def verify_dated_cookie(dated_cookie):
                           'bounce_fail_dated.txt')
     # Accept the message only if the address has not expired, and the
     # HMAC is valid.
-    if datemac != Cookie.datemac(cookie_date):
+    if not Cookie.verify_dated_mac(datemac, cookie_date):
         do_default_action(Defaults.ACTION_FAIL_DATED.lower(),
                           'action_fail_dated',
                           'bounce_fail_dated.txt')
@@ -659,9 +656,8 @@ def verify_keyword_cookie(keyword_cookie):
     parts = keyword_cookie.split('.')
     keyword = '.'.join(parts[:-1])
     mac = parts[-1:][0]
-    newmac = Cookie.make_keywordmac(keyword)
     # Accept the message only if the HMAC can be verified.
-    if mac == newmac:
+    if Cookie.verify_keyword_mac(mac, keyword):
         logit("OK", "good_keyword_cookie \"" + keyword + "\"")
         mta.deliver(msgin)
     else:

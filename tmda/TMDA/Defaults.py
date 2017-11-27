@@ -808,7 +808,7 @@ if 'ACTION_OUTGOING' not in vars():
 # A list containing one or more message headers whose values should be
 # used to create a "fingerprint" for the message.  If the header value
 # is 'body' (all-lowercase), the message body content is used instead
-# of a header value.  The fingerprint is a SHA-1 HMAC digest
+# of a header value.  The fingerprint is a HMAC digest, using HMAC_ALGO,
 # represented as a base64-encoded string.  This fingerprint will be
 # added to your outgoing client-side messages (i.e, messages sent with
 # tmda-sendmail) in an `X-TMDA-Fingerprint' header prior to injection.
@@ -843,7 +843,7 @@ if 'ACTION_OUTGOING' not in vars():
 #
 # The following header would then be added to the outgoing message:
 #
-# X-TMDA-Fingerprint: vDBoOHtIUE6VniJguxJ+w2fR5bU
+# X-TMDA-Fingerprint: RosHVeKk7RxuFw9vi26R6w07MmC+LyBngj0i/Ty34mk
 #
 # No default
 if 'FINGERPRINT' not in vars():
@@ -859,14 +859,48 @@ if 'FINGERPRINT' not in vars():
 if 'FULLNAME' not in vars():
     FULLNAME = Util.getfullname()
 
+# HMAC_ALGO
+# The algorithm to use to obtain the HMAC, as a string compatible with
+# hashlib.new().  If prefixed with a leading 'p2', PBKDF2 iterative
+# derivation function will be used along the chosen HMAC algorithm,
+# using 10^HMAC_ROUNDS rounds.
+#
+# CHANGING THIS VALUE WILL INVALIDATE ALL PREVIOUSLY GENERATED HMACs!
+#
+# Default is 'p2sha256' (PBKDF2 along SHA256)
+if 'HMAC_ALGO' not in vars():
+    HMAC_ALGO = 'p2sha256'
+
+# HMAC_ROUNDS
+# An integer which determines the quantity of iterative rounds for PBKDF2
+# algorithms, as a power of 10; e.g. 5 => 10^5 = 100'000 rounds.
+#
+# CHANGING THIS VALUE WILL INVALIDATE ALL PREVIOUSLY GENERATED HMACs!
+#
+# Default is 5 (100'000 rounds)
+if 'HMAC_ROUNDS' not in vars():
+    HMAC_ROUNDS = 5
+
 # HMAC_BYTES
 # An integer which determines the length of the HMACs used in TMDA's
-# "cookies".  Read the `CRYPTO' file for more information.  Changing
-# this value will will invalidate all previously generated HMACs.
+# "cookies".  Read the `CRYPTO' file for more information.
 #
-# Default is 3 (24-bit HMACs)
+# CHANGING THIS VALUE WILL INVALIDATE ALL PREVIOUSLY GENERATED HMACs!
+#
+# Default is 5 (40-bit HMACs)
 if 'HMAC_BYTES' not in vars():
-    HMAC_BYTES = 3
+    HMAC_BYTES = 5
+
+# HMAC_ENCODING_COMPAT
+# A boolean that enables legacy (hexadecimal) HMAC encoding compatibility.
+# This should be enabled only when upgrading from TMDA < 1.3 and hexadecimal
+# encoded HMAC/addresses are still being used.  After a key rollover - and
+# taking care no hexadecimal HMAC are being used as a result of collision
+# with the new aplhanumeric encoding - this setting can be set back to False.
+#
+# Default is False
+if 'HMAC_ENCODING_COMPAT' not in vars():
+    HMAC_ENCODING_COMPAT = False
 
 # HOSTNAME
 # The right-hand side of your email address (after `@').  Used only in
@@ -1691,6 +1725,43 @@ if 'X_TMDA_IN_SUBJECT' not in vars():
 if 'CRYPT_KEY_FILE' not in vars():
     CRYPT_KEY_FILE = os.path.join(DATADIR, 'crypt_key')
 
+# CRYPT_KEY_FILE_ROLLOVER
+# File which contains your PREVIOUS ("rolled-over-from") TMDA secret key.
+# If defined, TMDA will fallback to verify tagged addresses using this
+# key in case the current key (as per CRYPT_KEY_FILE) fails.
+# Also see the HMAC_ALGO_ROLLOVER, HMAC_ROUNDS_ROLLOVER and HMAC_BYTES_ROLLOVER
+# settings below.
+#
+# Default is None (no rollover)
+if 'CRYPT_KEY_FILE_ROLLOVER' not in vars():
+    CRYPT_KEY_FILE_ROLLOVER = None
+
+# HMAC_ALGO_ROLLOVER
+# Rollover equivalent of HMAC_ALGO.
+# See CRYPTO_KEY_FILE_ROLLOVER for details.
+# The "legacy" (older TMDA) algorithm was 'sha1'.
+#
+# Default is HMAC_ALGO
+if 'HMAC_ALGO_ROLLOVER' not in vars():
+    HMAC_ALGO_ROLLOVER = HMAC_ALGO
+
+# HMAC_ROUNDS_ROLLOVER
+# Rollover equivalent of HMAC_ALGO.
+# See CRYPTO_KEY_FILE_ROLLOVER for details.
+#
+# Default is HMAC_ROUNDS
+if 'HMAC_ROUNDS_ROLLOVER' not in vars():
+    HMAC_ROUNDS_ROLLOVER = HMAC_ROUNDS
+
+# HMAC_BYTES_ROLLOVER
+# Rollover equivalent of HMAC_BYTES.
+# See CRYPTO_KEY_FILE_ROLLOVER for details.
+# The "legacy" (older TMDA) default value was 3.
+#
+# Default is HMAC_BYTES
+if 'HMAC_BYTES_ROLLOVER' not in vars():
+    HMAC_BYTES_ROLLOVER = HMAC_BYTES
+
 ###################################
 # END of user configurable settings
 ###################################
@@ -1703,6 +1774,7 @@ _path_vars = {
     'CGI_SETTINGS': None,
     'CONFIRM_APPEND': None,
     'CRYPT_KEY_FILE': None,
+    'CRYPT_KEY_FILE_ROLLOVER': None,
     'DATADIR': None,
     'DELIVERY': None,
     'FILTER_INCOMING': None,
@@ -1744,6 +1816,18 @@ else:
         pass
     else:
         raise Errors.ConfigError("Can't find key file: " + CRYPT_KEY_FILE)
+# ... ditto rollover key
+if CRYPT_KEY_FILE_ROLLOVER and not 'TMDA_CGI_MODE' in os.environ:
+    if os.path.exists(CRYPT_KEY_FILE_ROLLOVER):
+        if os.name == 'posix':
+            crypt_key_filemode = Util.getfilemode(CRYPT_KEY_FILE_ROLLOVER)
+            if crypt_key_filemode not in (0o400, 0o600):
+                if ALLOW_MODE_640 and crypt_key_filemode == 0o640:
+                    pass
+                else:
+                    raise Errors.ConfigError(CRYPT_KEY_FILE_ROLLOVER + " must be chmod 400 or 600!")
+    else:
+        raise Errors.ConfigError("Can't find rollover key file: " + CRYPT_KEY_FILE_ROLLOVER)
 
 # Read key from CRYPT_KEY_FILE, and then convert it from hex back into
 # raw binary.  Hex has only 4 bits of entropy per byte as opposed to 8.
@@ -1755,4 +1839,7 @@ except IOError:
         pass
     else:
         raise
-
+# ... ditto rollover key
+CRYPT_KEY_ROLLOVER = None
+if CRYPT_KEY_FILE_ROLLOVER and not 'TMDA_CGI_MODE' in os.environ:
+    CRYPT_KEY_ROLLOVER = binascii.unhexlify(open(CRYPT_KEY_FILE_ROLLOVER).read().strip())

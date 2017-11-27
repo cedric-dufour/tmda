@@ -9,6 +9,3 @@ Python 3.x support (finalization):
  - verify MBOX delivery support
  - verify database (DB_*_APPEND) support
 
-New features:
- - crypto key rollover
-
