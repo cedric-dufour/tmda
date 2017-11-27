@@ -406,7 +406,7 @@ def runcmd_checked(cmd, input_mixed=None, stdout=PIPE, stderr=PIPE):
     """
     (r, stdoutdata, stderrdata) = runcmd(cmd, input_mixed, stdout, stderr)
     if r > 0:
-        raise Exception('command %r exited with error %d' % (cmd, r))
+        raise Exception('command %r exited with error %d (msg:%s)' % (cmd, r, stderrdata))
     elif r < 0:
         raise Exception('command %r exited with signal %d' % (cmd, -r))
 
