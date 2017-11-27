@@ -3,6 +3,26 @@ this file.
 
 ======================================================================
 
+If you are upgrading from a release of TMDA < 1.3:
+
+* Templates can only use a single charset, specified by the global
+  X-TMDA-Template-Charset header. Charset-suffixed headers (<header>.
+  <charset>: ...) are NO LONGER supported.
+  => Existing templates MUST be updated accordingly.
+
+* Tag encoding is now alphanumeric.
+  => Enable HMAC_ENCODING_COMPAT if upgrading from an existing TMDA
+     setup and hexadecimal tags are still "on the loose".
+
+* Default HMAC algorithm and bytes size are now PDKDF2+SHA256
+  (100'000 rounds) and 5 bytes.
+  => Set HMAC_ALGO = 'sha1' and HMAC_BYTES = 3 to retain compatibility
+     with existing setups
+  => Look into key rollover (see *_ROLLOVER settings) to migrate
+     to the new settings (or any other of your choice)
+
+======================================================================
+
 If you are upgrading from a release of TMDA < 1.1.11:
 
 * the 'htdocs' directory has been removed.
