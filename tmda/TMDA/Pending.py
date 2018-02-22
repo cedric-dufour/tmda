@@ -345,7 +345,8 @@ class InteractiveQueue(Queue):
 
     def endProcessMessage(self, M):
         if not self.pretend:
-            if self.dispose in ('show', 'whitelist', 'blacklist'):
+            if (self.dispose in ('show', 'blacklist') or
+                (self.dispose == 'whitelist' and Defaults.PENDING_WHITELIST_RELEASE != 1)):
                 self.count = self.count - 1
                 self.msgs.insert(self.msgs.index(M.msgid), M.msgid)
                 self._delCache(M.msgid)
