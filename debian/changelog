@@ -1,3 +1,12 @@
+tmda (1.3.20180420a) UNRELEASED; urgency=low
+
+  * NEW RELEASE
+
+  - FIX: [tmda-pending] Do not show whitelisted message again when TMDA is
+         configured to release automatically (PENDING_WHITELIST_RELEASE=1).
+
+ -- Cédric Dufour <cedric.dufour@ced-network.net>  Fri, 20 Apr 2018 09:41:20 +0200
+
 tmda (1.3.20171127a) UNRELEASED; urgency=low
 
   * NEW RELEASE: TMDA 1.3.x "Ph3nix (Python 3 reborn)"

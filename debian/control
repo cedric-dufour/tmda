@@ -4,12 +4,12 @@ Priority: extra
 Maintainer: Cédric Dufour <cedric.dufour@ced-network.net>
 Build-Depends: python3 (>= 3.4), debhelper (>= 9), dh-python, dh-systemd
 X-Python3-Version: >= 3.4
-Standards-Version: 3.9.8
+Standards-Version: 4.1.3
 Homepage: http://github.com/cedric-dufour/tmda-fork
 
 Package: tmda
 Architecture: all
-Depends: python3 (>= 3.4)
+Depends: python3 (>= 3.4), ${python3:Depends}
 Description: Tagged Message Delivery Agent (TMDA)
  Tagged Message Delivery Agent is a spam prevention tool supporting white
  lists, black lists, challenge-response, and tagged addresses which accept
