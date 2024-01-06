@@ -12,6 +12,7 @@ semantic.cache
 
 # Ignore Debian packaging directories
 /.pybuild
+*.egg-info
 /debian/files
 /debian/*.debhelper
 /debian/*.debhelper.log

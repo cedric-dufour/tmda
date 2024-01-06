@@ -36,7 +36,7 @@ override_dh_installdocs:
 
 override_dh_clean:
 	# Delete build artefacts
-	rm -rf MANIFEST build dist
+	rm -rf MANIFEST build dist tmda/TMDA.egg-info
 	find tmda -name '*.pyc' -delete
 	find tmda -type d -name '__pycache__' -exec rmdir {} \;
 
