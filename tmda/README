@@ -50,6 +50,8 @@ NEWS contains a list of new features by release.
 
 INSTALL says how to install and configure TMDA.
 
+POSTFIX contains guidelines for postfix integration.
+
 THANKS contains acknowledgments and thanks.
 
 UPGRADE contains upgrade instructions from selected releases.

@@ -1,0 +1,49 @@
+TMDA and postfix integration
+=====
+
+Incoming messages
+-----
+
+For incoming messages, TMDA should be hooked in via postfix' configured Mail Delivery Agent (MDA).
+
+### Procmail
+
+In one's ~/.procmailrc:
+
+# Catch/verify TMDA-related messages
+# NOTE: with the '-p' option (used along :f procmail recipe), valid messages will
+#       NOT be delivered by TMDA itself but further processed by procmail
+:0 fW
+* ^(Delivered-)?To:.*cdufour-(confirm|dated|sender|keyword)-
+| /usr/bin/tmda-filter -p
+:0 e
+/dev/null
+
+
+Outgoing messages
+-----
+
+TMDA historically depends on tmda-ofmipd as mail submission daemon - as a frontend to tmda-inject -
+to tag outgoing messages and/or append recipient addresses to some whitelist.
+
+With Python asynchat module being planned for removal in Python 3.12 (and significant refactoring
+beeing needed to port it to asyncio), one may want to hook tmda-inject directly into postfix.
+
+Example given using the SMTPS (TCP/465) port; in /etc/postfix/master.cf:
+
+smtps inet n       -       y       -       -       smtpd
+  -o syslog_name=postfix/smtps
+  -o smtpd_tls_wrappermode=yes
+  -o smtpd_sasl_auth_enable=yes
+  -o content_filter=tmda-inject:
+tmda-inject  unix  -       n       n       -       -       pipe
+  flags=R user=mail argv=/etc/postfix/tmda-submission ${sasl_username} ${recipient}
+
+And the tmda-submission script:
+
+#!/bin/sh
+export USER=${1%%@*}
+export HOME=/data/users/${USER}
+shift
+
+exec /usr/bin/tmda-inject -c "${HOME}/.tmda/config" "${@}"
