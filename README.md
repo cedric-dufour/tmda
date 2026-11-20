@@ -1,3 +1,7 @@
+> THIS PROJECT HAS MOVED TO https://codeberg.org/cedric-dufour/tmda
+>
+> (and may vanish from GitHub with no further notice; please update your upstream URL)
+
 TMDA is an open source software application designed to significantly
 reduce the amount of spam (Internet junk-mail) you receive.  TMDA
 strives to be more effective, yet less time-consuming than traditional
